@@ -6,18 +6,17 @@ import (
 )
 
 type Config struct {
-	Checker      algorithms.Validator
 	ErrorHandler fiber.Handler
-	ApiKeys      map[string]string
+	ApiKeys      map[string]algorithms.Validator
 }
 
-func NewConfig(key string, age int32) *Config {
-	ohmac := algorithms.NewOneCombineHmac(key, age)
-
+func NewConfig(apiKeys map[string]string, age int32) *Config {
 	var config Config
-	config.Checker = ohmac.(algorithms.Validator)
+	config.ApiKeys = make(map[string]algorithms.Validator)
+	for key, val := range apiKeys {
+		config.ApiKeys[key] = (algorithms.NewOneCombineHmac(val, age)).(algorithms.Validator)
+	}
 	config.ErrorHandler = nil
-	config.ApiKeys = make(map[string]string)
 	return &config
 }
 
