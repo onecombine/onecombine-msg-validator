@@ -1,4 +1,4 @@
-package src
+package algorithms
 
 import (
 	"math"
@@ -19,7 +19,7 @@ func NewOneCombineHmac(key string, maxAge int32) interface{} {
 	return &instance
 }
 
-func (oc OneCombineHmac) Reformat(data string, timestamp string) string {
+func (oc OneCombineHmac) Reformat(data []byte, timestamp string) string {
 	var tstamp string
 	if tstamp = timestamp; len(timestamp) == 0 {
 		now := time.Now().Unix()
@@ -42,11 +42,11 @@ func (oc OneCombineHmac) Sign(data string, options ...string) string {
 	if len(options) > 0 {
 		tstamp = options[0]
 	}
-	filtered := oc.Reformat(data, tstamp)
-	return oc.Hmac.Sign(filtered)
+	filtered := oc.Reformat([]byte(data), tstamp)
+	return oc.Hmac.Sign([]byte(filtered))
 }
 
-func (oc OneCombineHmac) Verify(data, signature string) bool {
+func (oc OneCombineHmac) Verify(data []byte, signature string) bool {
 	prefix := signature[0:2]
 	if prefix != "t=" || !strings.Contains(signature, ",") {
 		return false
@@ -64,5 +64,5 @@ func (oc OneCombineHmac) Verify(data, signature string) bool {
 	}
 
 	filtered := oc.Reformat(data, tstamp)
-	return oc.Hmac.Verify(filtered, signature)
+	return oc.Hmac.Verify([]byte(filtered), signature)
 }

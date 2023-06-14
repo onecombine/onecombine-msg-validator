@@ -9,7 +9,7 @@ update:
 	go mod vendor
 
 test:
-	go test github.com/onecombine/onecombine-msg-validator/src
+	go test github.com/onecombine/onecombine-msg-validator/src/algorithms
 
 clean:
 	go mod tidy -v

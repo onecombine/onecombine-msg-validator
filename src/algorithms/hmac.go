@@ -1,4 +1,4 @@
-package src
+package algorithms
 
 import (
 	"crypto/hmac"
@@ -16,14 +16,14 @@ func NewHmacSha256(key string) *HmacSha256 {
 	return &instance
 }
 
-func (hmc HmacSha256) Sign(data string, options ...string) string {
+func (hmc HmacSha256) Sign(data []byte, options ...string) string {
 	hash := hmac.New(sha256.New, hmc.Key)
-	hash.Write([]byte(data))
+	hash.Write(data)
 	sha := base64.StdEncoding.EncodeToString(hash.Sum(nil))
 	return sha
 }
 
-func (hmc HmacSha256) Verify(data, signature string) bool {
+func (hmc HmacSha256) Verify(data []byte, signature string) bool {
 	sig := hmc.Sign(data)
 
 	return sig == signature
