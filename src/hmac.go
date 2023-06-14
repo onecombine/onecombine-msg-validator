@@ -3,7 +3,7 @@ package src
 import (
 	"crypto/hmac"
 	"crypto/sha256"
-	"encoding/hex"
+	"encoding/base64"
 )
 
 type HmacSha256 struct {
@@ -16,10 +16,10 @@ func NewHmacSha256(key string) *HmacSha256 {
 	return &instance
 }
 
-func (hmc HmacSha256) Sign(data string) string {
+func (hmc HmacSha256) Sign(data string, options ...string) string {
 	hash := hmac.New(sha256.New, hmc.Key)
 	hash.Write([]byte(data))
-	sha := hex.EncodeToString(hash.Sum(nil))
+	sha := base64.StdEncoding.EncodeToString(hash.Sum(nil))
 	return sha
 }
 

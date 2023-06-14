@@ -1,6 +1,7 @@
 package src
 
 import (
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -25,22 +26,23 @@ func (oc OneCombineHmac) Reformat(data string, timestamp string) string {
 		tstamp = strconv.FormatInt(now, 10)
 	}
 	filtered := ""
-	prev := ""
 	for _, ch := range data {
 		if (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || ch == '{' || ch == '}' || ch == ':' || ch == ',' || ch == '.' {
-			filtered += prev
-			prev = string(ch)
+			filtered += string(ch)
 		}
 	}
 	filtered += ":"
 	filtered += tstamp
-	filtered += "}"
 
 	return strings.ToUpper(filtered)
 }
 
-func (oc OneCombineHmac) Sign(data string) string {
-	filtered := oc.Reformat(data, "")
+func (oc OneCombineHmac) Sign(data string, options ...string) string {
+	tstamp := ""
+	if len(options) > 0 {
+		tstamp = options[0]
+	}
+	filtered := oc.Reformat(data, tstamp)
 	return oc.Hmac.Sign(filtered)
 }
 
@@ -54,6 +56,12 @@ func (oc OneCombineHmac) Verify(data, signature string) bool {
 	parts := strings.Split(signature, ",")
 	tstamp := parts[0]
 	signature = parts[1]
+
+	tstampValue, err := strconv.ParseInt(tstamp, 10, 64)
+	now := time.Now().Unix()
+	if err != nil || math.Abs(float64(tstampValue)-float64(now)) > float64(oc.MaxAge) {
+		return false
+	}
 
 	filtered := oc.Reformat(data, tstamp)
 	return oc.Hmac.Verify(filtered, signature)
