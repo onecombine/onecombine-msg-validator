@@ -7,14 +7,15 @@ import (
 
 type Config struct {
 	ErrorHandler fiber.Handler
-	ApiKeys      map[string]algorithms.Validator
+	ApiKeys      map[string]*algorithms.Validator
 }
 
 func NewConfig(apiKeys map[string]string, age int32) *Config {
 	var config Config
-	config.ApiKeys = make(map[string]algorithms.Validator)
+	config.ApiKeys = make(map[string]*algorithms.Validator)
 	for key, val := range apiKeys {
-		config.ApiKeys[key] = (algorithms.NewOneCombineHmac(val, age)).(algorithms.Validator)
+		validator := (algorithms.NewOneCombineHmac(val, age)).(algorithms.Validator)
+		config.ApiKeys[key] = &validator
 	}
 	config.ErrorHandler = nil
 	return &config
@@ -33,7 +34,7 @@ func NewHandler(config Config) fiber.Handler {
 
 		switch ctx.Method() {
 		case "GET":
-			if config.ApiKeys[apiKey] == "" {
+			if config.ApiKeys[apiKey] == nil {
 				return config.ErrorHandler(ctx)
 			} else {
 				return ctx.Next()
@@ -43,11 +44,12 @@ func NewHandler(config Config) fiber.Handler {
 		case "PUT":
 			fallthrough
 		case "DELETE":
-			if config.ApiKeys[apiKey] == "" {
+			validator := config.ApiKeys[apiKey]
+			if validator == nil {
 				return config.ErrorHandler(ctx)
 			} else {
 				signature := ctx.GetReqHeaders()["Signature"]
-				if config.Checker.Verify(ctx.Body(), signature) {
+				if (*validator).Verify(ctx.Body(), signature) {
 					return ctx.Next()
 				} else {
 					return ctx.SendStatus(fiber.StatusUnauthorized)
