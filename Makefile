@@ -3,6 +3,9 @@
 init:
 	rm -f go.mod
 	go mod init github.com/onecombine/onecombine-msg-validator
+	go get github.com/aws/aws-sdk-go-v2/aws
+	go get github.com/aws/aws-sdk-go-v2/config
+	go get github.com/aws/aws-sdk-go-v2/service/secretsmanager
 
 update:
 	go get .
