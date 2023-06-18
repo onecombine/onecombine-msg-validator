@@ -1,20 +1,31 @@
 package fiber
 
 import (
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/onecombine/onecombine-msg-validator/src/algorithms"
+	"github.com/onecombine/onecombine-msg-validator/src/utils"
 )
+
+const MESSAGE_EXPIRATION_MSEC string = "MESSAGE_EXPIRATION_MSEC"
 
 type Config struct {
 	ErrorHandler fiber.Handler
 	ApiKeys      map[string]*algorithms.Validator
 }
 
-func NewConfig(apiKeys map[string]string, age int32) *Config {
+func NewConfig() *Config {
 	var config Config
 	config.ApiKeys = make(map[string]*algorithms.Validator)
+
+	aws := utils.NewAwsUtils()
+	apiKeys := aws.GetApiKeysMap()
+	exp := utils.GetEnv(MESSAGE_EXPIRATION_MSEC, "100000")
+	age, _ := strconv.Atoi(exp)
+
 	for key, val := range apiKeys {
-		validator := (algorithms.NewOneCombineHmac(val, age)).(algorithms.Validator)
+		validator := (algorithms.NewOneCombineHmac(val, int32(age))).(algorithms.Validator)
 		config.ApiKeys[key] = &validator
 	}
 	config.ErrorHandler = nil
