@@ -10,9 +10,15 @@ import (
 
 const MESSAGE_EXPIRATION_MSEC string = "MESSAGE_EXPIRATION_MSEC"
 
+type XnapUtility struct {
+	ApiKey    string
+	Validator *algorithms.Validator
+}
+
 type Config struct {
 	ErrorHandler fiber.Handler
 	ApiKeys      map[string]*algorithms.Validator
+	Xnap         XnapUtility
 }
 
 func NewConfig() *Config {
@@ -29,6 +35,10 @@ func NewConfig() *Config {
 		config.ApiKeys[key] = &validator
 	}
 	config.ErrorHandler = nil
+
+	config.Xnap.ApiKey = aws.SecretValues.XnapApiKey
+	xnapVal := (algorithms.NewOneCombineHmac(aws.SecretValues.XnapSecretKey, int32(age))).(algorithms.Validator)
+	config.Xnap.Validator = &xnapVal
 	return &config
 }
 
