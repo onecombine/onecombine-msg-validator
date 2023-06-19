@@ -1,6 +1,7 @@
 package algorithms
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -19,7 +20,7 @@ func NewOneCombineHmac(key string, maxAge int32) interface{} {
 	return &instance
 }
 
-func (oc OneCombineHmac) Reformat(data []byte, timestamp string) string {
+func (oc OneCombineHmac) Reformat(data []byte, timestamp string) (string, string) {
 	var tstamp string
 	if tstamp = timestamp; len(timestamp) == 0 {
 		now := time.Now().Unix()
@@ -34,7 +35,7 @@ func (oc OneCombineHmac) Reformat(data []byte, timestamp string) string {
 	filtered += ":"
 	filtered += tstamp
 
-	return strings.ToUpper(filtered)
+	return strings.ToUpper(filtered), tstamp
 }
 
 func (oc OneCombineHmac) Sign(data string, options ...string) string {
@@ -42,8 +43,8 @@ func (oc OneCombineHmac) Sign(data string, options ...string) string {
 	if len(options) > 0 {
 		tstamp = options[0]
 	}
-	filtered := oc.Reformat([]byte(data), tstamp)
-	return oc.Hmac.Sign([]byte(filtered))
+	filtered, t := oc.Reformat([]byte(data), tstamp)
+	return fmt.Sprintf("t=%s,", t) + oc.Hmac.Sign([]byte(filtered))
 }
 
 func (oc OneCombineHmac) Verify(data []byte, signature string) bool {
@@ -63,6 +64,6 @@ func (oc OneCombineHmac) Verify(data []byte, signature string) bool {
 		return false
 	}
 
-	filtered := oc.Reformat(data, tstamp)
+	filtered, _ := oc.Reformat(data, tstamp)
 	return oc.Hmac.Verify([]byte(filtered), signature)
 }
