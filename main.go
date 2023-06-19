@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -20,8 +21,20 @@ func main() {
 			client := &http.Client{}
 			req, _ := http.NewRequest("GET", url, nil)
 			req.Header.Set("Liquid-Api-Key", key)
-			res, _ := client.Do(req)
-			log.Printf("%v\n", res)
+			res, err := client.Do(req)
+
+			if err == nil {
+				defer res.Body.Close()
+
+				if res.StatusCode < 300 {
+					bytes, err := io.ReadAll(res.Body)
+					if err != nil {
+						log.Fatal(err)
+					}
+					body := string(bytes)
+					log.Printf("%v\n", body)
+				}
+			}
 		}
 
 	}

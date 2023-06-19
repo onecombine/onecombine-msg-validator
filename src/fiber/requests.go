@@ -27,7 +27,7 @@ func NewConfig() *Config {
 
 	aws := utils.NewAwsUtils()
 	apiKeys := aws.GetApiKeysMap()
-	exp := utils.GetEnv(MESSAGE_EXPIRATION_MSEC, "100000")
+	exp := utils.GetEnv(MESSAGE_EXPIRATION_MSEC, "600000")
 	age, _ := strconv.Atoi(exp)
 
 	for key, val := range apiKeys {
