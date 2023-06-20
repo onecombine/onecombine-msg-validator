@@ -4,7 +4,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"fmt"
 )
 
 type HmacSha256 struct {
@@ -25,9 +24,7 @@ func (hmc HmacSha256) Sign(data []byte, options ...string) string {
 }
 
 func (hmc HmacSha256) Verify(data []byte, signature string) bool {
-	fmt.Printf("HMAC Verification %s vs %s\n", string(data), signature)
 	sig := hmc.Sign(data)
 
-	fmt.Printf("Final HMAC Verification %s vs %s\n", sig, signature)
 	return sig == signature
 }
