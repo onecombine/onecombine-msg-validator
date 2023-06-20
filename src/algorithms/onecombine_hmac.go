@@ -48,6 +48,7 @@ func (oc OneCombineHmac) Sign(data string, options ...string) string {
 }
 
 func (oc OneCombineHmac) Verify(data []byte, signature string) bool {
+	fmt.Printf("(1) Verifying...\n")
 	prefix := signature[0:2]
 	if prefix != "t=" || !strings.Contains(signature, ",") {
 		return false
@@ -60,10 +61,12 @@ func (oc OneCombineHmac) Verify(data []byte, signature string) bool {
 
 	tstampValue, err := strconv.ParseInt(tstamp, 10, 64)
 	now := time.Now().Unix()
+	fmt.Printf("(2) Verifying...%v\n", now)
 	if err != nil || math.Abs(float64(tstampValue)-float64(now)) > float64(oc.MaxAge) {
 		return false
 	}
 
 	filtered, _ := oc.Reformat(data, tstamp)
+	fmt.Printf("Verifying... %s vs. %s\n", filtered, signature)
 	return oc.Hmac.Verify([]byte(filtered), signature)
 }

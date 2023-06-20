@@ -45,6 +45,7 @@ func main() {
 			algo := algorithms.NewOneCombineHmac(key, 60*60*1000)
 			hmac := algo.(*algorithms.OneCombineHmac)
 			sig := hmac.Sign(body)
+			log.Printf("sig %v\n", sig)
 
 			client := &http.Client{}
 			req, _ := http.NewRequest("POST", url, bytes.NewBuffer([]byte(body)))
@@ -64,6 +65,17 @@ func main() {
 					log.Printf("%v\n", body)
 				}
 			}
+		}
+	case 99:
+		{
+			body := `{"partner_id": "500001", "order_ref": "2020040318061601678097480", "payee": "400001100000000", "currency_code": "SGD", "amount": "8.80", "service_code": "13", "merchant_name": "O'\'' Coffee Club", "merchant_city": "Singapore", "merchant_country_code": "SG", "mcc": "5812", "postal_code": "138577", "payload_code": "XNAP"}`
+			algo := algorithms.NewOneCombineHmac(key, 60*60*1000)
+			hmac := algo.(*algorithms.OneCombineHmac)
+			sig := hmac.Sign(body)
+			log.Printf("sig %v\n", sig)
+
+			result := hmac.Verify([]byte(body), sig)
+			log.Printf("Result %v\n", result)
 		}
 
 	}

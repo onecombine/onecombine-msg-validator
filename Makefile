@@ -15,6 +15,9 @@ run_00:
 run_01:
 	go run . 1 "http://localhost:3000/api/v1/qr" "ABCD-ABCD-ABCD"
 
+run_99:
+	go run . 99 "http://localhost:3000/api/v1/qr" "ABCD-ABCD-ABCD"
+
 update:
 	go get .
 	go mod vendor
