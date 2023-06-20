@@ -10,13 +10,13 @@ init:
 	go get github.com/aws/aws-sdk-go-v2/service/secretsmanager
 
 run_00:
-	go run . 0 "http://localhost:3000/api/v1/qr" "ABCD-ABCD-ABCD"
+	go run . 0 "http://localhost:3000/api/v1/qr" "ABCD-ABCD-ABCD" "aaaa"
 
 run_01:
-	go run . 1 "http://localhost:3000/api/v1/qr" "ABCD-ABCD-ABCD"
+	go run . 1 "http://localhost:3000/api/v1/qr" "ABCD-ABCD-ABCD" "aaaa"
 
 run_99:
-	go run . 99 "http://localhost:3000/api/v1/qr" "ABCD-ABCD-ABCD"
+	go run . 99 "http://localhost:3000/api/v1/qr" "ABCD-ABCD-ABCD" "aaaa"
 
 update:
 	go get .

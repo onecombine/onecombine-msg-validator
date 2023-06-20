@@ -16,14 +16,15 @@ func main() {
 
 	mode, _ := strconv.Atoi(args[0])
 	url := args[1]
-	key := args[2]
+	apikey := args[2]
+	secret := args[3]
 
 	switch mode {
 	case 0:
 		{
 			client := &http.Client{}
 			req, _ := http.NewRequest("GET", url, nil)
-			req.Header.Set("Liquid-Api-Key", key)
+			req.Header.Set("Liquid-Api-Key", apikey)
 			res, err := client.Do(req)
 
 			if err == nil {
@@ -42,14 +43,14 @@ func main() {
 	case 1:
 		{
 			body := `{"partner_id": "500001", "order_ref": "2020040318061601678097480", "payee": "400001100000000", "currency_code": "SGD", "amount": "8.80", "service_code": "13", "merchant_name": "O'\'' Coffee Club", "merchant_city": "Singapore", "merchant_country_code": "SG", "mcc": "5812", "postal_code": "138577", "payload_code": "XNAP"}`
-			algo := algorithms.NewOneCombineHmac(key, 60*60*1000)
+			algo := algorithms.NewOneCombineHmac(secret, 60*60*1000)
 			hmac := algo.(*algorithms.OneCombineHmac)
 			sig := hmac.Sign(body)
 			log.Printf("sig %v\n", sig)
 
 			client := &http.Client{}
 			req, _ := http.NewRequest("POST", url, bytes.NewBuffer([]byte(body)))
-			req.Header.Set("Liquid-Api-Key", key)
+			req.Header.Set("Liquid-Api-Key", apikey)
 			req.Header.Set("Signature", sig)
 			res, err := client.Do(req)
 
@@ -69,7 +70,7 @@ func main() {
 	case 99:
 		{
 			body := `{"partner_id": "500001", "order_ref": "2020040318061601678097480", "payee": "400001100000000", "currency_code": "SGD", "amount": "8.80", "service_code": "13", "merchant_name": "O'\'' Coffee Club", "merchant_city": "Singapore", "merchant_country_code": "SG", "mcc": "5812", "postal_code": "138577", "payload_code": "XNAP"}`
-			algo := algorithms.NewOneCombineHmac(key, 60*60*1000)
+			algo := algorithms.NewOneCombineHmac(secret, 60*60*1000)
 			hmac := algo.(*algorithms.OneCombineHmac)
 			sig := hmac.Sign(body)
 			log.Printf("sig %v\n", sig)
