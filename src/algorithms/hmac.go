@@ -28,5 +28,6 @@ func (hmc HmacSha256) Verify(data []byte, signature string) bool {
 	fmt.Printf("HMAC Verification %s vs %s\n", string(data), signature)
 	sig := hmc.Sign(data)
 
+	fmt.Printf("Final HMAC Verification %s vs %s\n", sig, signature)
 	return sig == signature
 }
