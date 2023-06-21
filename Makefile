@@ -15,6 +15,9 @@ run_00:
 run_01:
 	go run . 1 "http://localhost:3000/api/v1/qr" "ABCD-ABCD-ABCD" "aaaa"
 
+run_02:
+	go run . 2 "http://localhost:3000/api/v1/status/33333" "ABCD-ABCD-ABCD" "aaaa"
+
 run_99:
 	go run . 99 "http://localhost:3000/api/v1/qr" "ABCD-ABCD-ABCD" "aaaa"
 
