@@ -8,6 +8,7 @@ init:
 	go get github.com/aws/aws-sdk-go-v2/aws
 	go get github.com/aws/aws-sdk-go-v2/config
 	go get github.com/aws/aws-sdk-go-v2/service/secretsmanager
+	go get github.com/redis/go-redis/v9
 
 run_00:
 	go run . 0 "http://localhost:3000/api/v1/qr" "ABCD-ABCD-ABCD" "aaaa"
