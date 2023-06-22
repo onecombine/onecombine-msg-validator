@@ -12,12 +12,14 @@ import (
 const REDIS_HOST string = "URL_REDIS_HOST"
 const REDIS_PASSWORD string = "REDIS_PASSWORD"
 const REDIS_DEFAULT_DB string = "REDIS_DEFAULT_DB"
+const REDIS_CACHE_TTL string = "REDIS_CACHE_TTL"
 
 const ERROR_CACHE_UNKNOWN string = "cache: unknown"
 const ERROR_CACHE_NOTFOUND string = "cache: not_found"
 
 type Cache struct {
 	Client *redis.Client
+	Ttl    time.Duration
 }
 
 func NewCache() *Cache {
@@ -28,6 +30,8 @@ func NewCache() *Cache {
 		Password: GetEnv(REDIS_PASSWORD, ""),
 		DB:       db,
 	})
+	duration, _ := time.ParseDuration(GetEnv(REDIS_CACHE_TTL, "10m"))
+	instance.Ttl = duration
 	return &instance
 }
 
