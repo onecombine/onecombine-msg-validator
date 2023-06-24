@@ -31,7 +31,7 @@ func NewConfig() *Config {
 	age, _ := strconv.Atoi(exp)
 
 	for key, val := range apiKeys {
-		validator := (algorithms.NewOneCombineHmac(val, int32(age))).(algorithms.Validator)
+		validator := (algorithms.NewOneCombineHmac(val.SecretKey, int32(age))).(algorithms.Validator)
 		config.ApiKeys[key] = &validator
 	}
 	config.ErrorHandler = nil

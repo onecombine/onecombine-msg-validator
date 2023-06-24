@@ -26,6 +26,12 @@ type AwsSecretValues struct {
 	XnapApiKey          string `json:"XNAP_APIKEY" binding:"required"`
 }
 
+type ApiKeyMapValue struct {
+	ApiKey     string
+	SecretKey  string
+	WebhookUrl string
+}
+
 type AwsUtils struct {
 	SecretsManager *secretsmanager.Client
 	SecretValues   AwsSecretValues
@@ -66,10 +72,10 @@ func NewAwsUtils() *AwsUtils {
 	return &instance
 }
 
-func (awsUtils AwsUtils) GetApiKeysMap() map[string]string {
-	result := make(map[string]string)
-	result[awsUtils.SecretValues.Acquirer01ApiKey] = awsUtils.SecretValues.Acquirer01SecretKey
-	result[awsUtils.SecretValues.Acquirer02ApiKey] = awsUtils.SecretValues.Acquirer02SecretKey
-	result[awsUtils.SecretValues.Acquirer03ApiKey] = awsUtils.SecretValues.Acquirer03SecretKey
+func (awsUtils AwsUtils) GetApiKeysMap() map[string]*ApiKeyMapValue {
+	result := make(map[string]*ApiKeyMapValue)
+	result[awsUtils.SecretValues.Acquirer01ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer01ApiKey, SecretKey: awsUtils.SecretValues.Acquirer01SecretKey, WebhookUrl: GetEnv("ACQUIRER01_WEBHOOKURL", "")}
+	result[awsUtils.SecretValues.Acquirer02ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer02ApiKey, SecretKey: awsUtils.SecretValues.Acquirer02SecretKey, WebhookUrl: GetEnv("ACQUIRER02_WEBHOOKURL", "")}
+	result[awsUtils.SecretValues.Acquirer03ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer03ApiKey, SecretKey: awsUtils.SecretValues.Acquirer03SecretKey, WebhookUrl: GetEnv("ACQUIRER03_WEBHOOKURL", "")}
 	return result
 }
