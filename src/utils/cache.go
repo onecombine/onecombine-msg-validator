@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -53,4 +54,8 @@ func (cache Cache) Get(key string) (string, error) {
 		return "", errors.New(ERROR_CACHE_UNKNOWN)
 	}
 	return val, nil
+}
+
+func (cache Cache) QrKey(id string) string {
+	return fmt.Sprintf("QR-%s", id)
 }
