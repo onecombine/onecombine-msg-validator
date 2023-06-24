@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -21,6 +22,12 @@ const ERROR_CACHE_NOTFOUND string = "cache: not_found"
 type Cache struct {
 	Client *redis.Client
 	Ttl    time.Duration
+}
+
+type CacheQrValue struct {
+	Id     string
+	Ref    string
+	ApiKey string
 }
 
 func NewCache() *Cache {
@@ -58,4 +65,19 @@ func (cache Cache) Get(key string) (string, error) {
 
 func (cache Cache) QrKey(id string) string {
 	return fmt.Sprintf("QR-%s", id)
+}
+
+func (cache Cache) QrValue(id, ref, apiKey string) string {
+	item := CacheQrValue{Id: id, Ref: ref, ApiKey: apiKey}
+	data, _ := json.Marshal(item)
+	return string(data)
+}
+
+func CacheQrValueFromString(data string) (*CacheQrValue, error) {
+	var value CacheQrValue
+	err := json.Unmarshal([]byte(data), &value)
+	if err != nil {
+		return nil, err
+	}
+	return &value, nil
 }
