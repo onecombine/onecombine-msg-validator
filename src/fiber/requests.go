@@ -21,6 +21,10 @@ type Config struct {
 	Xnap         XnapUtility
 }
 
+func GetAcquirerApiKey(ctx *fiber.Ctx) string {
+	return ctx.GetReqHeaders()["Liquid-Api-Key"]
+}
+
 func NewConfig() *Config {
 	var config Config
 	config.ApiKeys = make(map[string]*algorithms.Validator)
