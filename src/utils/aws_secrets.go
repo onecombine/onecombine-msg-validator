@@ -83,3 +83,11 @@ func (awsUtils AwsUtils) GetApiKeysMap() map[string]*ApiKeyMapValue {
 	result[awsUtils.SecretValues.Acquirer03ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer03ApiKey, SecretKey: awsUtils.SecretValues.Acquirer03SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer03IdempotencyKey, WebhookUrl: GetEnv("ACQUIRER03_WEBHOOKURL", "")}
 	return result
 }
+
+func (awsUtils AwsUtils) GetWebHookKeysMap() map[string]*ApiKeyMapValue {
+	result := make(map[string]*ApiKeyMapValue)
+	result[GetEnv("ACQUIRER01_WEBHOOKURL", "")] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer01ApiKey, SecretKey: awsUtils.SecretValues.Acquirer01SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer01IdempotencyKey, WebhookUrl: GetEnv("ACQUIRER01_WEBHOOKURL", "")}
+	result[GetEnv("ACQUIRER02_WEBHOOKURL", "")] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer02ApiKey, SecretKey: awsUtils.SecretValues.Acquirer02SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer02IdempotencyKey, WebhookUrl: GetEnv("ACQUIRER02_WEBHOOKURL", "")}
+	result[GetEnv("ACQUIRER03_WEBHOOKURL", "")] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer03ApiKey, SecretKey: awsUtils.SecretValues.Acquirer03SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer03IdempotencyKey, WebhookUrl: GetEnv("ACQUIRER03_WEBHOOKURL", "")}
+	return result
+}
