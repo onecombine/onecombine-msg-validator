@@ -16,20 +16,24 @@ const AWS_SECRET_ID = "AWS_SECRET_ID"
 const AWS_REGION string = "AWS_REGION"
 
 type AwsSecretValues struct {
-	Acquirer01SecretKey string `json:"ACQUIRER01_SECRETKEY" binding:"required"`
-	Acquirer02SecretKey string `json:"ACQUIRER02_SECRETKEY" binding:"required"`
-	Acquirer03SecretKey string `json:"ACQUIRER03_SECRETKEY" binding:"required"`
-	Acquirer01ApiKey    string `json:"ACQUIRER01_APIKEY" binding:"required"`
-	Acquirer02ApiKey    string `json:"ACQUIRER02_APIKEY" binding:"required"`
-	Acquirer03ApiKey    string `json:"ACQUIRER03_APIKEY" binding:"required"`
-	XnapSecretKey       string `json:"XNAP_SECRETKEY" binding:"required"`
-	XnapApiKey          string `json:"XNAP_APIKEY" binding:"required"`
+	Acquirer01SecretKey      string `json:"ACQUIRER01_SECRETKEY" binding:"required"`
+	Acquirer02SecretKey      string `json:"ACQUIRER02_SECRETKEY" binding:"required"`
+	Acquirer03SecretKey      string `json:"ACQUIRER03_SECRETKEY" binding:"required"`
+	Acquirer01ApiKey         string `json:"ACQUIRER01_APIKEY" binding:"required"`
+	Acquirer02ApiKey         string `json:"ACQUIRER02_APIKEY" binding:"required"`
+	Acquirer03ApiKey         string `json:"ACQUIRER03_APIKEY" binding:"required"`
+	Acquirer01IdempotencyKey string `json:"ACQUIRER01_IDEMPOTENCYKEY" binding:"required"`
+	Acquirer02IdempotencyKey string `json:"ACQUIRER02_IDEMPOTENCYKEY" binding:"required"`
+	Acquirer03IdempotencyKey string `json:"ACQUIRER03_IDEMPOTENCYKEY" binding:"required"`
+	XnapSecretKey            string `json:"XNAP_SECRETKEY" binding:"required"`
+	XnapApiKey               string `json:"XNAP_APIKEY" binding:"required"`
 }
 
 type ApiKeyMapValue struct {
-	ApiKey     string
-	SecretKey  string
-	WebhookUrl string
+	ApiKey         string
+	SecretKey      string
+	IdempotencyKey string
+	WebhookUrl     string
 }
 
 type AwsUtils struct {
@@ -74,8 +78,8 @@ func NewAwsUtils() *AwsUtils {
 
 func (awsUtils AwsUtils) GetApiKeysMap() map[string]*ApiKeyMapValue {
 	result := make(map[string]*ApiKeyMapValue)
-	result[awsUtils.SecretValues.Acquirer01ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer01ApiKey, SecretKey: awsUtils.SecretValues.Acquirer01SecretKey, WebhookUrl: GetEnv("ACQUIRER01_WEBHOOKURL", "")}
-	result[awsUtils.SecretValues.Acquirer02ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer02ApiKey, SecretKey: awsUtils.SecretValues.Acquirer02SecretKey, WebhookUrl: GetEnv("ACQUIRER02_WEBHOOKURL", "")}
-	result[awsUtils.SecretValues.Acquirer03ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer03ApiKey, SecretKey: awsUtils.SecretValues.Acquirer03SecretKey, WebhookUrl: GetEnv("ACQUIRER03_WEBHOOKURL", "")}
+	result[awsUtils.SecretValues.Acquirer01ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer01ApiKey, SecretKey: awsUtils.SecretValues.Acquirer01SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer01IdempotencyKey, WebhookUrl: GetEnv("ACQUIRER01_WEBHOOKURL", "")}
+	result[awsUtils.SecretValues.Acquirer02ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer02ApiKey, SecretKey: awsUtils.SecretValues.Acquirer02SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer02IdempotencyKey, WebhookUrl: GetEnv("ACQUIRER02_WEBHOOKURL", "")}
+	result[awsUtils.SecretValues.Acquirer03ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer03ApiKey, SecretKey: awsUtils.SecretValues.Acquirer03SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer03IdempotencyKey, WebhookUrl: GetEnv("ACQUIRER03_WEBHOOKURL", "")}
 	return result
 }
