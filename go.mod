@@ -8,7 +8,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.19.10
 	github.com/gofiber/fiber/v2 v2.47.0
 	github.com/redis/go-redis/v9 v9.0.5
-	github.com/stretchr/testify v1.8.4
+	github.com/segmentio/kafka-go v0.4.40
+	github.com/stretchr/testify v1.8.0
 )
 
 require (
@@ -32,6 +33,7 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/pierrec/lz4/v4 v4.1.15 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
