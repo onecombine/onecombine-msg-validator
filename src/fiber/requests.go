@@ -19,13 +19,14 @@ type Config struct {
 	ErrorHandler fiber.Handler
 	ApiKeys      map[string]*algorithms.Validator
 	Xnap         XnapUtility
+	Name         string
 }
 
 func GetAcquirerApiKey(ctx *fiber.Ctx) string {
 	return ctx.GetReqHeaders()["Liquid-Api-Key"]
 }
 
-func NewConfig() *Config {
+func NewConfig(name string) *Config {
 	var config Config
 	config.ApiKeys = make(map[string]*algorithms.Validator)
 
@@ -43,6 +44,7 @@ func NewConfig() *Config {
 	config.Xnap.ApiKey = aws.SecretValues.XnapApiKey
 	xnapVal := (algorithms.NewOneCombineHmac(aws.SecretValues.XnapSecretKey, int32(age))).(algorithms.Validator)
 	config.Xnap.Validator = &xnapVal
+	config.Name = name
 	return &config
 }
 
@@ -50,11 +52,51 @@ func NewHandler(config Config) fiber.Handler {
 
 	if config.ErrorHandler == nil {
 		config.ErrorHandler = func(ctx *fiber.Ctx) error {
+			logger := ctx.Locals("Logger").(utils.Logger)
+			logger.Msg.HttpStatus = utils.LOGGING_HTTPSTATUS_UNAUTHORIZED
+			logger.Msg.ErrorType = utils.LOGGING_ERRORTYPE_BUSINESSERROR
 			return ctx.SendStatus(fiber.StatusUnauthorized)
 		}
 	}
 
 	return func(ctx *fiber.Ctx) error {
+		logger := utils.Logger{}
+
+		opts := []utils.Option{}
+		reqId := ctx.GetReqHeaders()["X-Request-ID"]
+		if reqId != "" {
+			opts = append(opts, utils.WithRequestId(reqId))
+		}
+		deviceId := ctx.GetReqHeaders()["X-Device-ID"]
+		if deviceId != "" {
+			opts = append(opts, utils.WithDeviceId(deviceId))
+		}
+		userAgent := ctx.GetReqHeaders()["User-Agent"]
+		if userAgent != "" {
+			opts = append(opts, utils.WithUserAgent(userAgent))
+		}
+		ip := ctx.IP()
+		if ip != "" {
+			opts = append(opts, utils.WithRemoteAddress(ip))
+		}
+		userId := ctx.GetReqHeaders()["X-User-ID"]
+		if userId != "" {
+			opts = append(opts, utils.WithUserId(userId))
+		}
+		channelId := ctx.GetReqHeaders()["X-Channel-ID"]
+		if channelId != "" {
+			opts = append(opts, utils.WithChannelId(channelId))
+		}
+		if config.Name != "" {
+			opts = append(opts, utils.WithService(config.Name))
+		}
+		opts = append(opts, utils.WithRawUrl(ctx.BaseURL()))
+		opts = append(opts, utils.WithHttpMethod(ctx.Method()))
+
+		logger.Intialize(opts...)
+		ctx.Locals("Logger", logger)
+		defer logger.Print()
+
 		apiKey := ctx.GetReqHeaders()["Liquid-Api-Key"]
 
 		switch ctx.Method() {
@@ -77,6 +119,8 @@ func NewHandler(config Config) fiber.Handler {
 				if (*validator).Verify(ctx.Body(), signature) {
 					return ctx.Next()
 				} else {
+					logger.Msg.HttpStatus = utils.LOGGING_HTTPSTATUS_UNAUTHORIZED
+					logger.Msg.ErrorType = utils.LOGGING_ERRORTYPE_BUSINESSERROR
 					return ctx.SendStatus(fiber.StatusUnauthorized)
 				}
 			}
