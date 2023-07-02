@@ -117,6 +117,7 @@ func WithHttpStatus(v string) Option {
 	return LoggingHttpMethod(v)
 }
 
+const LOGGING_ERRORTYPE_NONE string = "None"
 const LOGGING_ERRORTYPE_SYSTEMERROR string = "SystemError"
 const LOGGING_ERRORTYPE_BUSINESSERROR string = "BusinessError"
 

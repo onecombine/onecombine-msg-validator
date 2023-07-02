@@ -41,7 +41,7 @@ func (logger *Logger) Intialize(opts ...Option) {
 		RawUrl:        "",
 		HttpMethod:    LOGGING_HTTPMETHOD_GET,
 		HttpStatus:    LOGGING_HTTPSTATUS_OK,
-		ErrorType:     LOGGING_ERRORTYPE_SYSTEMERROR,
+		ErrorType:     LOGGING_ERRORTYPE_NONE,
 	}
 
 	for _, opt := range opts {
@@ -68,6 +68,10 @@ func (logger *Logger) Intialize(opts ...Option) {
 }
 
 func (logger Logger) Print() {
+	if logger.Msg.ErrorType == LOGGING_ERRORTYPE_NONE {
+		return
+	}
+
 	now := time.Now()
 	logger.Msg.ExecutionTimeMsec = uint64(now.Sub(logger.StartTime).Milliseconds())
 
