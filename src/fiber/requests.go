@@ -90,7 +90,7 @@ func NewHandler(config Config) fiber.Handler {
 		if config.Name != "" {
 			opts = append(opts, utils.WithService(config.Name))
 		}
-		opts = append(opts, utils.WithRawUrl(ctx.OriginalURL()))
+		opts = append(opts, utils.WithRawUrl(ctx.BaseURL()+ctx.OriginalURL()))
 		opts = append(opts, utils.WithHttpMethod(ctx.Method()))
 
 		logger.Intialize(opts...)
