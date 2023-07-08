@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.19.10
 	github.com/gofiber/fiber/v2 v2.47.0
 	github.com/redis/go-redis/v9 v9.0.5
-	github.com/segmentio/kafka-go v0.4.40
+	github.com/segmentio/kafka-go v0.4.42
 	github.com/stretchr/testify v1.8.0
 )
 

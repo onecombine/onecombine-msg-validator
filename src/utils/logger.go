@@ -9,11 +9,9 @@ import (
 type LoggingMessage struct {
 	TransactionTime   string `json:"tranTime" example:"2022-06-14T17:09:05.556+07:00"`
 	RequestId         string `json:"requestID" example:"8e5b2ae9-2db7-4fd6-9f51-dfe303e59719"`
-	DeviceId          string `json:"deviceID" example:"98F1DF38-2070-4503-90E2-67E95BFE33A2"`
 	UserAgent         string `json:"userAgent" example:"Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36"`
-	RemoteAddress     string `json:"RemoteAddress" example:"223.205.245.198"`
-	UserId            string `json:"userID" example:"2548693"`
-	ChannelId         string `json:"channelID" example:"ABC"`
+	RemoteAddress     string `json:"remoteAddress" example:"223.205.245.198"`
+	PartnerId         string `json:"partnerID" example:"ABC"`
 	Service           string `json:"service" example:"authen-service"`
 	RawUrl            string `json:"rawURL" example:"https://abc.com/path/to/api"`
 	HttpMethod        string `json:"httpMethod" example:"POST"`
@@ -32,11 +30,9 @@ type Logger struct {
 func (logger *Logger) Intialize(opts ...Option) {
 	def := options{
 		RequestId:     "",
-		DeviceId:      "",
 		UserAgent:     "",
 		RemoteAddress: "",
-		UserId:        "",
-		ChannelId:     "",
+		PartnerId:     "",
 		Service:       "",
 		RawUrl:        "",
 		HttpMethod:    LOGGING_HTTPMETHOD_GET,
@@ -52,11 +48,9 @@ func (logger *Logger) Intialize(opts ...Option) {
 	logger.StartTime = now
 	logger.Msg.TransactionTime = now.Format("2006-01-02T15:04:05.000") + now.Format("-0700")
 	logger.Msg.RequestId = def.RequestId
-	logger.Msg.DeviceId = def.DeviceId
 	logger.Msg.UserAgent = def.UserAgent
 	logger.Msg.RemoteAddress = def.RemoteAddress
-	logger.Msg.UserId = def.UserId
-	logger.Msg.ChannelId = def.ChannelId
+	logger.Msg.PartnerId = def.PartnerId
 	logger.Msg.Service = def.Service
 	logger.Msg.RawUrl = def.RawUrl
 	logger.Msg.HttpMethod = def.HttpMethod
@@ -68,10 +62,6 @@ func (logger *Logger) Intialize(opts ...Option) {
 }
 
 func (logger Logger) Print() {
-	if logger.Msg.ErrorType == LOGGING_ERRORTYPE_NONE {
-		return
-	}
-
 	now := time.Now()
 	logger.Msg.ExecutionTimeMsec = uint64(now.Sub(logger.StartTime).Milliseconds())
 

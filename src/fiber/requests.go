@@ -15,9 +15,14 @@ type XnapUtility struct {
 	Validator *algorithms.Validator
 }
 
+type AcquirerUtility struct {
+	validator *algorithms.Validator
+	id        string
+}
+
 type Config struct {
 	ErrorHandler fiber.Handler
-	ApiKeys      map[string]*algorithms.Validator
+	ApiKeys      map[string]*AcquirerUtility
 	Xnap         XnapUtility
 	Name         string
 }
@@ -28,7 +33,7 @@ func GetAcquirerApiKey(ctx *fiber.Ctx) string {
 
 func NewConfig(name string) *Config {
 	var config Config
-	config.ApiKeys = make(map[string]*algorithms.Validator)
+	config.ApiKeys = make(map[string]*AcquirerUtility)
 
 	aws := utils.NewAwsUtils()
 	apiKeys := aws.GetApiKeysMap()
@@ -37,7 +42,7 @@ func NewConfig(name string) *Config {
 
 	for key, val := range apiKeys {
 		validator := (algorithms.NewOneCombineHmac(val.SecretKey, int32(age))).(algorithms.Validator)
-		config.ApiKeys[key] = &validator
+		config.ApiKeys[key] = &AcquirerUtility{validator: &validator, id: val.Id}
 	}
 	config.ErrorHandler = nil
 
@@ -60,16 +65,15 @@ func NewHandler(config Config) fiber.Handler {
 	}
 
 	return func(ctx *fiber.Ctx) error {
+		apiKey := ctx.GetReqHeaders()["Liquid-Api-Key"]
+		acquirer := config.ApiKeys[apiKey]
+
 		logger := utils.Logger{}
 
 		opts := []utils.Option{}
 		reqId := ctx.GetReqHeaders()["X-Request-ID"]
 		if reqId != "" {
 			opts = append(opts, utils.WithRequestId(reqId))
-		}
-		deviceId := ctx.GetReqHeaders()["X-Device-ID"]
-		if deviceId != "" {
-			opts = append(opts, utils.WithDeviceId(deviceId))
 		}
 		userAgent := ctx.GetReqHeaders()["User-Agent"]
 		if userAgent != "" {
@@ -79,13 +83,11 @@ func NewHandler(config Config) fiber.Handler {
 		if ip != "" {
 			opts = append(opts, utils.WithRemoteAddress(ip))
 		}
-		userId := ctx.GetReqHeaders()["X-User-ID"]
-		if userId != "" {
-			opts = append(opts, utils.WithUserId(userId))
-		}
-		channelId := ctx.GetReqHeaders()["X-Channel-ID"]
-		if channelId != "" {
-			opts = append(opts, utils.WithChannelId(channelId))
+		partnerId := ctx.GetReqHeaders()["X-Partner-ID"]
+		if partnerId != "" {
+			opts = append(opts, utils.WithPartnerId(partnerId))
+		} else {
+			opts = append(opts, utils.WithPartnerId(acquirer.id))
 		}
 		if config.Name != "" {
 			opts = append(opts, utils.WithService(config.Name))
@@ -97,11 +99,9 @@ func NewHandler(config Config) fiber.Handler {
 		ctx.Locals("Logger", logger)
 		defer logger.Print()
 
-		apiKey := ctx.GetReqHeaders()["Liquid-Api-Key"]
-
 		switch ctx.Method() {
 		case "GET":
-			if config.ApiKeys[apiKey] == nil {
+			if acquirer == nil {
 				return config.ErrorHandler(ctx)
 			} else {
 				return ctx.Next()
@@ -111,7 +111,7 @@ func NewHandler(config Config) fiber.Handler {
 		case "PUT":
 			fallthrough
 		case "DELETE":
-			validator := config.ApiKeys[apiKey]
+			validator := acquirer.validator
 			if validator == nil {
 				return config.ErrorHandler(ctx)
 			} else {

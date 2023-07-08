@@ -2,11 +2,9 @@ package utils
 
 type options struct {
 	RequestId     string
-	DeviceId      string
 	UserAgent     string
 	RemoteAddress string
-	UserId        string
-	ChannelId     string
+	PartnerId     string
 	Service       string
 	RawUrl        string
 	HttpMethod    string
@@ -19,11 +17,9 @@ type Option interface {
 }
 
 type LoggingRequestId string
-type LoggingDeviceId string
 type LoggingUserAgent string
 type LoggingRemoteAddress string
-type LoggingUserId string
-type LoggingChannelId string
+type LoggingPartnerId string
 type LoggingService string
 type LoggingRawUrl string
 type LoggingHttpMethod string
@@ -33,20 +29,14 @@ type LoggingErrorType string
 func (v LoggingRequestId) set(opts *options) {
 	opts.RequestId = string(v)
 }
-func (v LoggingDeviceId) set(opts *options) {
-	opts.DeviceId = string(v)
-}
 func (v LoggingUserAgent) set(opts *options) {
 	opts.UserAgent = string(v)
 }
 func (v LoggingRemoteAddress) set(opts *options) {
 	opts.RemoteAddress = string(v)
 }
-func (v LoggingUserId) set(opts *options) {
-	opts.UserId = string(v)
-}
-func (v LoggingChannelId) set(opts *options) {
-	opts.ChannelId = string(v)
+func (v LoggingPartnerId) set(opts *options) {
+	opts.PartnerId = string(v)
 }
 func (v LoggingService) set(opts *options) {
 	opts.Service = string(v)
@@ -67,20 +57,14 @@ func (v LoggingErrorType) set(opts *options) {
 func WithRequestId(v string) Option {
 	return LoggingRequestId(v)
 }
-func WithDeviceId(v string) Option {
-	return LoggingDeviceId(v)
-}
 func WithUserAgent(v string) Option {
 	return LoggingUserAgent(v)
 }
 func WithRemoteAddress(v string) Option {
 	return LoggingRemoteAddress(v)
 }
-func WithUserId(v string) Option {
-	return LoggingUserId(v)
-}
-func WithChannelId(v string) Option {
-	return LoggingChannelId(v)
+func WithPartnerId(v string) Option {
+	return LoggingPartnerId(v)
 }
 func WithService(v string) Option {
 	return LoggingService(v)
