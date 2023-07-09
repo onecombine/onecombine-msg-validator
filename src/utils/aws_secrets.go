@@ -40,9 +40,8 @@ type ApiKeyMapValue struct {
 	WebhookUrl     string
 }
 
-type AwsUtils struct {
-	SecretsManager *secretsmanager.Client
-	SecretValues   AwsSecretValues
+type AwsSecretStringLoader interface {
+	GetSecretValue(region, secretId string) string
 }
 
 func GetEnv(key, fallback string) string {
@@ -52,26 +51,17 @@ func GetEnv(key, fallback string) string {
 	return fallback
 }
 
-func NewAwsUtils() *AwsUtils {
-	var instance AwsUtils
+func NewAwsSecretValues(loader *AwsSecretStringLoader) *AwsSecretValues {
+	var instance AwsSecretValues
 
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(GetEnv(AWS_REGION, "ap-southeast-1")))
-	if err != nil {
-		log.Fatalf("Unable to load SDK config, %v", err)
+	if loader == nil {
+		u := NewAwsUtils()
+		loader = u.(*AwsSecretStringLoader)
 	}
 
-	instance.SecretsManager = secretsmanager.NewFromConfig(cfg)
-	input := &secretsmanager.GetSecretValueInput{
-		SecretId: aws.String(GetEnv(AWS_SECRET_ID, "")),
-	}
-
-	result, err := instance.SecretsManager.GetSecretValue(context.TODO(), input)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-
-	if result.SecretString != nil {
-		err := json.Unmarshal([]byte(*result.SecretString), &instance.SecretValues)
+	value := (*loader).GetSecretValue(GetEnv(AWS_REGION, "ap-southeast-1"), GetEnv(AWS_SECRET_ID, ""))
+	if value != "" {
+		err := json.Unmarshal([]byte(value), &instance)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -80,18 +70,42 @@ func NewAwsUtils() *AwsUtils {
 	return &instance
 }
 
-func (awsUtils AwsUtils) GetApiKeysMap() map[string]*ApiKeyMapValue {
+type AwsUtils struct {
+}
+
+func NewAwsUtils() interface{} {
+	var instance AwsUtils
+	return &instance
+}
+
+func (autils AwsUtils) GetSecretValue(region, secretId string) string {
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
+	if err != nil {
+		log.Fatalf("Unable to load SDK config, %v", err)
+	}
+
+	secretMgr := secretsmanager.NewFromConfig(cfg)
+	input := &secretsmanager.GetSecretValueInput{SecretId: aws.String(secretId)}
+
+	result, err := secretMgr.GetSecretValue(context.TODO(), input)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	return *result.SecretString
+}
+
+func (sv AwsSecretValues) GetApiKeysMap() map[string]*ApiKeyMapValue {
 	result := make(map[string]*ApiKeyMapValue)
-	result[awsUtils.SecretValues.Acquirer01ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer01ApiKey, SecretKey: awsUtils.SecretValues.Acquirer01SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer01IdempotencyKey, Id: awsUtils.SecretValues.Acquirer01Id, WebhookUrl: GetEnv("ACQUIRER01_WEBHOOKURL", "")}
-	result[awsUtils.SecretValues.Acquirer02ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer02ApiKey, SecretKey: awsUtils.SecretValues.Acquirer02SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer02IdempotencyKey, Id: awsUtils.SecretValues.Acquirer02Id, WebhookUrl: GetEnv("ACQUIRER02_WEBHOOKURL", "")}
-	result[awsUtils.SecretValues.Acquirer03ApiKey] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer03ApiKey, SecretKey: awsUtils.SecretValues.Acquirer03SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer03IdempotencyKey, Id: awsUtils.SecretValues.Acquirer03Id, WebhookUrl: GetEnv("ACQUIRER03_WEBHOOKURL", "")}
+	result[sv.Acquirer01ApiKey] = &ApiKeyMapValue{ApiKey: sv.Acquirer01ApiKey, SecretKey: sv.Acquirer01SecretKey, IdempotencyKey: sv.Acquirer01IdempotencyKey, Id: sv.Acquirer01Id, WebhookUrl: GetEnv("ACQUIRER01_WEBHOOKURL", "")}
+	result[sv.Acquirer02ApiKey] = &ApiKeyMapValue{ApiKey: sv.Acquirer02ApiKey, SecretKey: sv.Acquirer02SecretKey, IdempotencyKey: sv.Acquirer02IdempotencyKey, Id: sv.Acquirer02Id, WebhookUrl: GetEnv("ACQUIRER02_WEBHOOKURL", "")}
+	result[sv.Acquirer03ApiKey] = &ApiKeyMapValue{ApiKey: sv.Acquirer03ApiKey, SecretKey: sv.Acquirer03SecretKey, IdempotencyKey: sv.Acquirer03IdempotencyKey, Id: sv.Acquirer03Id, WebhookUrl: GetEnv("ACQUIRER03_WEBHOOKURL", "")}
 	return result
 }
 
-func (awsUtils AwsUtils) GetWebHookKeysMap() map[string]*ApiKeyMapValue {
+func (sv AwsSecretValues) GetWebHookKeysMap() map[string]*ApiKeyMapValue {
 	result := make(map[string]*ApiKeyMapValue)
-	result[GetEnv("ACQUIRER01_WEBHOOKURL", "")] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer01ApiKey, SecretKey: awsUtils.SecretValues.Acquirer01SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer01IdempotencyKey, Id: awsUtils.SecretValues.Acquirer01Id, WebhookUrl: GetEnv("ACQUIRER01_WEBHOOKURL", "")}
-	result[GetEnv("ACQUIRER02_WEBHOOKURL", "")] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer02ApiKey, SecretKey: awsUtils.SecretValues.Acquirer02SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer02IdempotencyKey, Id: awsUtils.SecretValues.Acquirer02Id, WebhookUrl: GetEnv("ACQUIRER02_WEBHOOKURL", "")}
-	result[GetEnv("ACQUIRER03_WEBHOOKURL", "")] = &ApiKeyMapValue{ApiKey: awsUtils.SecretValues.Acquirer03ApiKey, SecretKey: awsUtils.SecretValues.Acquirer03SecretKey, IdempotencyKey: awsUtils.SecretValues.Acquirer03IdempotencyKey, Id: awsUtils.SecretValues.Acquirer03Id, WebhookUrl: GetEnv("ACQUIRER03_WEBHOOKURL", "")}
+	result[GetEnv("ACQUIRER01_WEBHOOKURL", "")] = &ApiKeyMapValue{ApiKey: sv.Acquirer01ApiKey, SecretKey: sv.Acquirer01SecretKey, IdempotencyKey: sv.Acquirer01IdempotencyKey, Id: sv.Acquirer01Id, WebhookUrl: GetEnv("ACQUIRER01_WEBHOOKURL", "")}
+	result[GetEnv("ACQUIRER02_WEBHOOKURL", "")] = &ApiKeyMapValue{ApiKey: sv.Acquirer02ApiKey, SecretKey: sv.Acquirer02SecretKey, IdempotencyKey: sv.Acquirer02IdempotencyKey, Id: sv.Acquirer02Id, WebhookUrl: GetEnv("ACQUIRER02_WEBHOOKURL", "")}
+	result[GetEnv("ACQUIRER03_WEBHOOKURL", "")] = &ApiKeyMapValue{ApiKey: sv.Acquirer03ApiKey, SecretKey: sv.Acquirer03SecretKey, IdempotencyKey: sv.Acquirer03IdempotencyKey, Id: sv.Acquirer03Id, WebhookUrl: GetEnv("ACQUIRER03_WEBHOOKURL", "")}
 	return result
 }

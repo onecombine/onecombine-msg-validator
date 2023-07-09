@@ -35,7 +35,7 @@ func NewConfig(name string) *Config {
 	var config Config
 	config.ApiKeys = make(map[string]*AcquirerUtility)
 
-	aws := utils.NewAwsUtils()
+	aws := utils.NewAwsSecretValues(nil)
 	apiKeys := aws.GetApiKeysMap()
 	exp := utils.GetEnv(MESSAGE_EXPIRATION_MSEC, "600000")
 	age, _ := strconv.Atoi(exp)
@@ -46,8 +46,8 @@ func NewConfig(name string) *Config {
 	}
 	config.ErrorHandler = nil
 
-	config.Xnap.ApiKey = aws.SecretValues.XnapApiKey
-	xnapVal := (algorithms.NewOneCombineHmac(aws.SecretValues.XnapSecretKey, int32(age))).(algorithms.Validator)
+	config.Xnap.ApiKey = aws.XnapApiKey
+	xnapVal := (algorithms.NewOneCombineHmac(aws.XnapSecretKey, int32(age))).(algorithms.Validator)
 	config.Xnap.Validator = &xnapVal
 	config.Name = name
 	return &config

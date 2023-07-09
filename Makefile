@@ -10,6 +10,7 @@ init:
 	go get github.com/aws/aws-sdk-go-v2/service/secretsmanager
 	go get github.com/redis/go-redis/v9
 	go get github.com/segmentio/kafka-go
+	go get github.com/stretchr/testify
 
 run_00:
 	go run . 0 "http://localhost:3000/api/v1/qr" "ABCD-ABCD-ABCD" "aaaa"
@@ -28,7 +29,7 @@ update:
 	go mod vendor
 
 test:
-	go test github.com/onecombine/onecombine-msg-validator/src/algorithms
+	go test -v -cover ./...
 
 clean:
 	go mod tidy -v
