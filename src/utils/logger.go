@@ -2,7 +2,7 @@ package utils
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"time"
 )
 
@@ -46,7 +46,7 @@ func (logger *Logger) Intialize(opts ...Option) {
 
 	now := time.Now()
 	logger.StartTime = now
-	logger.Msg.TransactionTime = now.Format("2006-01-02T15:04:05.000") + now.Format("-0700")
+	logger.Msg.TransactionTime = now.Format("2006-01-02T15:04:05.000") + now.Format("-07:00")
 	logger.Msg.RequestId = def.RequestId
 	logger.Msg.UserAgent = def.UserAgent
 	logger.Msg.RemoteAddress = def.RemoteAddress
@@ -66,5 +66,6 @@ func (logger Logger) Print() {
 	logger.Msg.ExecutionTimeMsec = uint64(now.Sub(logger.StartTime).Milliseconds())
 
 	raw, _ := json.Marshal(logger.Msg)
-	fmt.Print(string(raw))
+	log.SetFlags(0)
+	log.Print(string(raw))
 }

@@ -9,7 +9,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.47.0
 	github.com/redis/go-redis/v9 v9.0.5
 	github.com/segmentio/kafka-go v0.4.42
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.4
 )
 
 require (

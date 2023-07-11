@@ -47,6 +47,7 @@ func main() {
 			hmac := algo.(*algorithms.OneCombineHmac)
 			sig := hmac.Sign(body)
 			log.Printf("sig %v\n", sig)
+			log.Printf("request body %v\n", body)
 
 			client := &http.Client{}
 			req, _ := http.NewRequest("POST", url, bytes.NewBuffer([]byte(body)))
@@ -64,7 +65,7 @@ func main() {
 						log.Fatal(err)
 					}
 					body := string(bytes)
-					log.Printf("%v\n", body)
+					log.Printf("response body: %v\n", body)
 				}
 			}
 		}
