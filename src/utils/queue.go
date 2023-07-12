@@ -20,6 +20,9 @@ type Queue struct {
 	Connection       *kafka.Conn
 	PublishTimeout   time.Duration
 	SubscribeTimeout time.Duration
+
+	SetWriteDeadline func(t time.Time) error
+	WriteMessages    func(m ...kafka.Message) (int, error)
 }
 
 type QueueMessage struct {
@@ -31,13 +34,15 @@ type QueueMessageConsumer interface {
 	ProcessMessage(msg QueueMessage)
 }
 
+var KafkaConnect = kafka.DialLeader
+
 func NewQueue() *Queue {
 	topic := GetEnv(QUEUE_TOPIC, "notification-queue")
 	partition, _ := strconv.Atoi(GetEnv(QUEUE_PARTITION_ID, "0"))
 	host := GetEnv(QUEUE_HOST, "")
 
 	var queue Queue
-	conn, err := kafka.DialLeader(context.Background(), "tcp", host, topic, partition)
+	conn, err := KafkaConnect(context.Background(), "tcp", host, topic, partition)
 
 	if err != nil {
 		log.Fatal("Queue: failed to dial leader:", err)
@@ -46,6 +51,8 @@ func NewQueue() *Queue {
 	queue.Connection = conn
 	queue.PublishTimeout, _ = time.ParseDuration(GetEnv(QUEUE_PUBLISH_TIMEOUT, "20s"))
 	queue.SubscribeTimeout, _ = time.ParseDuration(GetEnv(QUEUE_SUBSCRIBE_TIMEOUT, "20s"))
+	queue.SetWriteDeadline = queue.Connection.SetWriteDeadline
+	queue.WriteMessages = queue.Connection.WriteMessages
 
 	return &queue
 }
@@ -56,8 +63,8 @@ func (queue Queue) Publish(msg QueueMessage) error {
 		return err
 	}
 
-	queue.Connection.SetWriteDeadline(time.Now().Add(queue.PublishTimeout))
-	_, err = queue.Connection.WriteMessages(kafka.Message{Value: raw})
+	queue.SetWriteDeadline(time.Now().Add(queue.PublishTimeout))
+	_, err = queue.WriteMessages(kafka.Message{Value: raw})
 	return err
 }
 
