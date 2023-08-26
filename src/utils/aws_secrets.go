@@ -40,7 +40,7 @@ type ApiKeyMapValue struct {
 	WebhookUrl     string
 }
 
-type AwsSecretStringLoader interface {
+type IAwsSecretStringLoader interface {
 	GetSecretValue(region, secretId string) string
 }
 
@@ -51,12 +51,12 @@ func GetEnv(key, fallback string) string {
 	return fallback
 }
 
-func NewAwsSecretValues(loader *AwsSecretStringLoader) *AwsSecretValues {
+func NewAwsSecretValues(loader *IAwsSecretStringLoader) *AwsSecretValues {
 	var instance AwsSecretValues
 
 	if loader == nil {
-		u := NewAwsUtils()
-		loader = u.(*AwsSecretStringLoader)
+		u := NewAwsUtils().(IAwsSecretStringLoader)
+		loader = &u
 	}
 
 	value := (*loader).GetSecretValue(GetEnv(AWS_REGION, "ap-southeast-1"), GetEnv(AWS_SECRET_ID, ""))

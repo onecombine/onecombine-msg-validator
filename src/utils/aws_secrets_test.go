@@ -31,7 +31,7 @@ func TestGetEnv(t *testing.T) {
 
 func TestNewAwsUtils(t *testing.T) {
 	mock := NewMockAwsUtils(`{"ACQUIRER01_SECRETKEY":"A1SK","ACQUIRER02_SECRETKEY":"A2SK","ACQUIRER03_SECRETKEY":"A3SK","ACQUIRER01_APIKEY":"A1AK","ACQUIRER02_APIKEY":"A2AK","ACQUIRER03_APIKEY":"A3AK","ACQUIRER01_IDEMPOTENCYKEY":"A1IK","ACQUIRER02_IDEMPOTENCYKEY":"A2IK","ACQUIRER03_IDEMPOTENCYKEY":"A3IK","ACQUIRER01_ID":"A1ID","ACQUIRER02_ID":"A2ID","ACQUIRER03_ID":"A3ID","XNAP_SECRETKEY":"XSK","XNAP_APIKEY":"XAK"}`)
-	loader := mock.(AwsSecretStringLoader)
+	loader := mock.(IAwsSecretStringLoader)
 	secret := NewAwsSecretValues(&loader)
 	expected := &AwsSecretValues{
 		Acquirer01SecretKey:      "A1SK",
@@ -52,7 +52,7 @@ func TestNewAwsUtils(t *testing.T) {
 	assert.Equal(t, expected, secret, "All is well scenario")
 
 	mock = NewMockAwsUtils(`{"ACQUIRER02_SECRETKEY":"A2SK","ACQUIRER03_SECRETKEY":"A3SK","ACQUIRER02_APIKEY":"A2AK","ACQUIRER03_APIKEY":"A3AK","ACQUIRER02_IDEMPOTENCYKEY":"A2IK","ACQUIRER03_IDEMPOTENCYKEY":"A3IK","ACQUIRER02_ID":"A2ID","ACQUIRER03_ID":"A3ID","XNAP_SECRETKEY":"XSK","XNAP_APIKEY":"XAK"}`)
-	loader = mock.(AwsSecretStringLoader)
+	loader = mock.(IAwsSecretStringLoader)
 	secret = NewAwsSecretValues(&loader)
 	expected = &AwsSecretValues{
 		Acquirer01SecretKey:      "",
@@ -79,7 +79,7 @@ func TestGetApiKeysMap(t *testing.T) {
 	os.Setenv("ACQUIRER03_WEBHOOKURL", "A3WH")
 
 	mock := NewMockAwsUtils(`{"ACQUIRER01_SECRETKEY":"A1SK","ACQUIRER02_SECRETKEY":"A2SK","ACQUIRER03_SECRETKEY":"A3SK","ACQUIRER01_APIKEY":"A1AK","ACQUIRER02_APIKEY":"A2AK","ACQUIRER03_APIKEY":"A3AK","ACQUIRER01_IDEMPOTENCYKEY":"A1IK","ACQUIRER02_IDEMPOTENCYKEY":"A2IK","ACQUIRER03_IDEMPOTENCYKEY":"A3IK","ACQUIRER01_ID":"A1ID","ACQUIRER02_ID":"A2ID","ACQUIRER03_ID":"A3ID","XNAP_SECRETKEY":"XSK","XNAP_APIKEY":"XAK"}`)
-	loader := mock.(AwsSecretStringLoader)
+	loader := mock.(IAwsSecretStringLoader)
 	secret := NewAwsSecretValues(&loader)
 	result := secret.GetApiKeysMap()
 
@@ -97,7 +97,7 @@ func TestGetWebhookKeysMap(t *testing.T) {
 	os.Setenv("ACQUIRER03_WEBHOOKURL", "A3WH")
 
 	mock := NewMockAwsUtils(`{"ACQUIRER01_SECRETKEY":"A1SK","ACQUIRER02_SECRETKEY":"A2SK","ACQUIRER03_SECRETKEY":"A3SK","ACQUIRER01_APIKEY":"A1AK","ACQUIRER02_APIKEY":"A2AK","ACQUIRER03_APIKEY":"A3AK","ACQUIRER01_IDEMPOTENCYKEY":"A1IK","ACQUIRER02_IDEMPOTENCYKEY":"A2IK","ACQUIRER03_IDEMPOTENCYKEY":"A3IK","ACQUIRER01_ID":"A1ID","ACQUIRER02_ID":"A2ID","ACQUIRER03_ID":"A3ID","XNAP_SECRETKEY":"XSK","XNAP_APIKEY":"XAK"}`)
-	loader := mock.(AwsSecretStringLoader)
+	loader := mock.(IAwsSecretStringLoader)
 	secret := NewAwsSecretValues(&loader)
 	result := secret.GetWebHookKeysMap()
 
