@@ -7,6 +7,7 @@ init:
 	go get github.com/gofiber/fiber/v2/middleware/logger
 	go get github.com/aws/aws-sdk-go-v2/aws
 	go get github.com/aws/aws-sdk-go-v2/config
+	go get github.com/aws/aws-sdk-go-v2/credentials
 	go get github.com/aws/aws-sdk-go-v2/service/secretsmanager
 	go get github.com/redis/go-redis/v9
 	go get github.com/segmentio/kafka-go
