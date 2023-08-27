@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"log"
 	"sync"
 
 	"github.com/gofiber/fiber/v2"
@@ -11,7 +10,8 @@ import (
 var once sync.Once
 
 type LoggingSession struct {
-	store *session.Store
+	store  *session.Store
+	values map[string]*Logger
 }
 
 var (
@@ -22,6 +22,7 @@ func GetLoggingSession() LoggingSession {
 
 	once.Do(func() {
 		instance.store = session.New()
+		instance.values = make(map[string]*Logger)
 	})
 
 	return instance
@@ -30,29 +31,28 @@ func GetLoggingSession() LoggingSession {
 func (s *LoggingSession) Save(ctx *fiber.Ctx, logger *Logger) {
 	sess, err := s.store.Get(ctx)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-
-	sess.Set("logger", logger)
-	sess.Save()
+	s.values[sess.ID()] = logger
 }
 
 func (s *LoggingSession) Get(ctx *fiber.Ctx) *Logger {
 	sess, err := s.store.Get(ctx)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	logger := sess.Get("logger").(*Logger)
+	logger := s.values[sess.ID()]
 	return logger
 }
 
 func (s *LoggingSession) Flush(ctx *fiber.Ctx) {
 	sess, err := s.store.Get(ctx)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	logger := sess.Get("logger").(*Logger)
+	logger := s.values[sess.ID()]
 	logger.Print()
+	delete(s.values, sess.ID())
 	sess.Destroy()
 }

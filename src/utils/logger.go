@@ -66,7 +66,7 @@ func (logger *Logger) Intialize(opts ...Option) {
 
 func (logger *Logger) Collect(ctx *fiber.Ctx) *Logger {
 	logger.Msg.HttpStatus = fmt.Sprintf("%d", ctx.Response().StatusCode())
-	logger.Msg.ResponseBody = fmt.Sprintf("%s", string(ctx.Response().Body()))
+	logger.Msg.ResponseBody = string(ctx.Response().Body())
 	return logger
 }
 
