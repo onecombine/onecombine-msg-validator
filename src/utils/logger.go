@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type LoggingMessage struct {
@@ -62,9 +64,10 @@ func (logger *Logger) Intialize(opts ...Option) {
 	logger.Msg.StackTrace = ""
 }
 
-func (logger *Logger) Collect(ctx *fiber.Context) {
-	logger.HttpStatus = fmt.Sprintf("%d", ctx.Response().StatusCode())
-	logger.ResponseBody = fmt.Sprintf("%s", string(ctx.Response().Body()))
+func (logger *Logger) Collect(ctx *fiber.Ctx) *Logger {
+	logger.Msg.HttpStatus = fmt.Sprintf("%d", ctx.Response().StatusCode())
+	logger.Msg.ResponseBody = fmt.Sprintf("%s", string(ctx.Response().Body()))
+	return logger
 }
 
 func (logger Logger) Print() {

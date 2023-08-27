@@ -97,8 +97,8 @@ func NewHandler(config Config) fiber.Handler {
 
 		logger.Intialize(opts...)
 
-		session := GetLoggingSession()
-		session.Save(ctx, logger)
+		session := utils.GetLoggingSession()
+		session.Save(ctx, &logger)
 		defer session.Flush(ctx)
 
 		switch ctx.Method() {

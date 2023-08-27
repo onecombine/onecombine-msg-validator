@@ -20,7 +20,6 @@ var (
 func GetLoggingSession() LoggingSession {
 
 	once.Do(func() {
-		instance = make(LoggingSession)
 		instance.store = session.New()
 	})
 
@@ -40,7 +39,7 @@ func (s LoggingSession) Save(ctx *fiber.Ctx, logger *Logger) {
 func (s LoggingSession) Get(ctx *fiber.Ctx) *Logger {
 	sess, err := s.store.Get(ctx)
 	if err != nil {
-		return
+		return nil
 	}
 
 	logger := sess.Get("logger").(*Logger)
