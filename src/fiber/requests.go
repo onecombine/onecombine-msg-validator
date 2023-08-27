@@ -86,9 +86,10 @@ func NewHandler(config Config) fiber.Handler {
 		partnerId := ctx.GetReqHeaders()["X-Partner-ID"]
 		if partnerId != "" {
 			opts = append(opts, utils.WithPartnerId(partnerId))
-		} else {
+		} else if acquirer != nil {
 			opts = append(opts, utils.WithPartnerId(acquirer.id))
 		}
+
 		if config.Name != "" {
 			opts = append(opts, utils.WithService(config.Name))
 		}
