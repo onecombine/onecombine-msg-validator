@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"log"
 	"sync"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,30 +27,30 @@ func GetLoggingSession() LoggingSession {
 	return instance
 }
 
-func (s LoggingSession) Save(ctx *fiber.Ctx, logger *Logger) {
+func (s *LoggingSession) Save(ctx *fiber.Ctx, logger *Logger) {
 	sess, err := s.store.Get(ctx)
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 
 	sess.Set("logger", logger)
 	sess.Save()
 }
 
-func (s LoggingSession) Get(ctx *fiber.Ctx) *Logger {
+func (s *LoggingSession) Get(ctx *fiber.Ctx) *Logger {
 	sess, err := s.store.Get(ctx)
 	if err != nil {
-		return nil
+		log.Fatal(err)
 	}
 
 	logger := sess.Get("logger").(*Logger)
 	return logger
 }
 
-func (s LoggingSession) Flush(ctx *fiber.Ctx) {
+func (s *LoggingSession) Flush(ctx *fiber.Ctx) {
 	sess, err := s.store.Get(ctx)
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 	logger := sess.Get("logger").(*Logger)
 	logger.Print()
