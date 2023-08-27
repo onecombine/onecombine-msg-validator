@@ -60,9 +60,11 @@ func NewHandler(config Config) fiber.Handler {
 
 	if config.ErrorHandler == nil {
 		config.ErrorHandler = func(ctx *fiber.Ctx) error {
-			logger := ctx.Locals("Logger").(utils.Logger)
+			session := utils.GetLoggingSession()
+			logger := session.Get(ctx)
 			logger.Msg.HttpStatus = utils.LOGGING_HTTPSTATUS_UNAUTHORIZED
 			logger.Msg.ErrorType = utils.LOGGING_ERRORTYPE_BUSINESSERROR
+			session.Save(ctx, logger)
 			return ctx.SendStatus(fiber.StatusUnauthorized)
 		}
 	}
