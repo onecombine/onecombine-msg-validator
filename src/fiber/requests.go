@@ -4,6 +4,8 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
+
 	"github.com/onecombine/onecombine-msg-validator/src/algorithms"
 	"github.com/onecombine/onecombine-msg-validator/src/utils"
 )
@@ -54,6 +56,7 @@ func NewConfig(name string) *Config {
 }
 
 func NewHandler(config Config) fiber.Handler {
+	store := session.New()
 
 	if config.ErrorHandler == nil {
 		config.ErrorHandler = func(ctx *fiber.Ctx) error {
@@ -98,6 +101,11 @@ func NewHandler(config Config) fiber.Handler {
 
 		logger.Intialize(opts...)
 
+		sess, err := store.Get(ctx)
+		if err != nil {
+			panic(err)
+		}
+		ctx.Locals("Session-ID", sess.ID())
 		session := utils.GetLoggingSession()
 		session.Save(ctx, &logger)
 		defer session.Flush(ctx)
