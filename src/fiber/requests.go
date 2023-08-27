@@ -10,18 +10,6 @@ import (
 	"github.com/onecombine/onecombine-msg-validator/src/utils"
 )
 
-const MESSAGE_EXPIRATION_MSEC string = "MESSAGE_EXPIRATION_MSEC"
-
-type XnapUtility struct {
-	ApiKey    string
-	Validator *algorithms.Validator
-}
-
-type AcquirerUtility struct {
-	validator *algorithms.Validator
-	id        string
-}
-
 type Config struct {
 	ErrorHandler fiber.Handler
 	ApiKeys      map[string]*AcquirerUtility
