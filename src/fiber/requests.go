@@ -96,15 +96,21 @@ func NewHandler(config Config) fiber.Handler {
 		opts = append(opts, utils.WithHttpMethod(ctx.Method()))
 
 		logger.Intialize(opts...)
-		ctx.Locals("Logger", logger)
-		defer logger.Print()
+
+		session := GetLoggingSession()
+		session.Save(ctx, logger)
+		defer session.Flush(ctx)
 
 		switch ctx.Method() {
 		case "GET":
 			if acquirer == nil {
-				return config.ErrorHandler(ctx)
+				err := config.ErrorHandler(ctx)
+				session.Save(ctx, logger.Collect(ctx))
+				return err
 			} else {
-				return ctx.Next()
+				err := ctx.Next()
+				session.Save(ctx, logger.Collect(ctx))
+				return err
 			}
 		case "POST":
 			fallthrough
@@ -113,19 +119,27 @@ func NewHandler(config Config) fiber.Handler {
 		case "DELETE":
 			validator := acquirer.validator
 			if validator == nil {
-				return config.ErrorHandler(ctx)
+				err := config.ErrorHandler(ctx)
+				session.Save(ctx, logger.Collect(ctx))
+				return err
 			} else {
 				signature := ctx.GetReqHeaders()["Signature"]
 				if (*validator).Verify(ctx.Body(), signature) {
-					return ctx.Next()
+					err := ctx.Next()
+					session.Save(ctx, logger.Collect(ctx))
+					return err
 				} else {
 					logger.Msg.HttpStatus = utils.LOGGING_HTTPSTATUS_UNAUTHORIZED
 					logger.Msg.ErrorType = utils.LOGGING_ERRORTYPE_BUSINESSERROR
-					return ctx.SendStatus(fiber.StatusUnauthorized)
+					err := ctx.SendStatus(fiber.StatusUnauthorized)
+					session.Save(ctx, logger.Collect(ctx))
+					return err
 				}
 			}
 		default:
-			return config.ErrorHandler(ctx)
+			err := config.ErrorHandler(ctx)
+			session.Save(ctx, logger.Collect(ctx))
+			return err
 		}
 	}
 }

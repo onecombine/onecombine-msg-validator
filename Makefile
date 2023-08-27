@@ -5,12 +5,14 @@ init:
 	go mod init github.com/onecombine/onecombine-msg-validator
 	go get github.com/gofiber/fiber/v2
 	go get github.com/gofiber/fiber/v2/middleware/logger
+	go get github.com/gofiber/fiber/v2/middleware/session
 	go get github.com/aws/aws-sdk-go-v2/aws
 	go get github.com/aws/aws-sdk-go-v2/config
 	go get github.com/aws/aws-sdk-go-v2/credentials
 	go get github.com/aws/aws-sdk-go-v2/service/secretsmanager
 	go get github.com/redis/go-redis/v9
 	go get github.com/segmentio/kafka-go
+	go get github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2
 	go get github.com/stretchr/testify
 
 run_00:

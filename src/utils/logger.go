@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"time"
 )
@@ -59,6 +60,11 @@ func (logger *Logger) Intialize(opts ...Option) {
 	logger.Msg.ExecutionTimeMsec = 0
 	logger.Msg.ResponseBody = ""
 	logger.Msg.StackTrace = ""
+}
+
+func (logger *Logger) Collect(ctx *fiber.Context) {
+	logger.HttpStatus = fmt.Sprintf("%d", ctx.Response().StatusCode())
+	logger.ResponseBody = fmt.Sprintf("%s", string(ctx.Response().Body()))
 }
 
 func (logger Logger) Print() {
