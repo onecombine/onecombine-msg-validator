@@ -57,7 +57,7 @@ func NewXnapHandler(config XnapConfig) fiber.Handler {
 		opts = append(opts, utils.WithHttpMethod(ctx.Method()))
 
 		logger.Intialize(opts...)
-		ctx.Locals("logger", logger)
+		ctx.Locals("logger", &logger)
 
 		switch ctx.Method() {
 		case "POST":
