@@ -44,10 +44,10 @@ func NewCache() *Cache {
 }
 
 func (cache Cache) Set(key, value string, ttl time.Duration) error {
-	err := cache.Client.Set(context.TODO(), key, value, ttl)
+	err := cache.Client.Set(context.TODO(), key, value, ttl).Err()
 
 	if err != nil {
-		return errors.New(ERROR_CACHE_UNKNOWN)
+		return err
 	}
 	return nil
 }
