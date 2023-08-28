@@ -65,10 +65,12 @@ func (logger *Logger) Intialize(opts ...Option) {
 }
 
 func (logger *Logger) Print(ctx *fiber.Ctx) {
-	other := ctx.Locals("logger").(*Logger)
-	logger.Msg = other.Msg
-	logger.Msg.HttpStatus = fmt.Sprintf("%d", ctx.Response().StatusCode())
-	logger.Msg.ResponseBody = string(ctx.Response().Body())
+	if ctx != nil {
+		other := ctx.Locals("logger").(*Logger)
+		logger.Msg = other.Msg
+		logger.Msg.HttpStatus = fmt.Sprintf("%d", ctx.Response().StatusCode())
+		logger.Msg.ResponseBody = string(ctx.Response().Body())
+	}
 
 	now := time.Now()
 	logger.Msg.ExecutionTimeMsec = uint64(now.Sub(logger.StartTime).Milliseconds())
