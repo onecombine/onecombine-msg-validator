@@ -5,7 +5,6 @@ init:
 	go mod init github.com/onecombine/onecombine-msg-validator
 	go get github.com/gofiber/fiber/v2
 	go get github.com/gofiber/fiber/v2/middleware/logger
-	go get github.com/gofiber/fiber/v2/middleware/session
 	go get github.com/aws/aws-sdk-go-v2/aws
 	go get github.com/aws/aws-sdk-go-v2/config
 	go get github.com/aws/aws-sdk-go-v2/credentials

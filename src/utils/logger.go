@@ -64,13 +64,12 @@ func (logger *Logger) Intialize(opts ...Option) {
 	logger.Msg.StackTrace = ""
 }
 
-func (logger *Logger) Collect(ctx *fiber.Ctx) *Logger {
+func (logger *Logger) Print(ctx *fiber.Ctx) {
+	other := ctx.Locals("logger").(*Logger)
+	logger.Msg = other.Msg
 	logger.Msg.HttpStatus = fmt.Sprintf("%d", ctx.Response().StatusCode())
 	logger.Msg.ResponseBody = string(ctx.Response().Body())
-	return logger
-}
 
-func (logger Logger) Print() {
 	now := time.Now()
 	logger.Msg.ExecutionTimeMsec = uint64(now.Sub(logger.StartTime).Milliseconds())
 

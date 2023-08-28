@@ -2,7 +2,6 @@ package fiber
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
 
 	"github.com/onecombine/onecombine-msg-validator/src/utils"
 )
@@ -20,15 +19,12 @@ func NewXnapConfig(name string) *XnapConfig {
 }
 
 func NewXnapHandler(config XnapConfig) fiber.Handler {
-	store := session.New()
-
 	if config.ErrorHandler == nil {
 		config.ErrorHandler = func(ctx *fiber.Ctx) error {
-			session := utils.GetLoggingSession()
-			logger := session.Get(ctx)
+			logger := ctx.Locals("logger").(*utils.Logger)
 			logger.Msg.HttpStatus = utils.LOGGING_HTTPSTATUS_UNAUTHORIZED
 			logger.Msg.ErrorType = utils.LOGGING_ERRORTYPE_BUSINESSERROR
-			session.Save(ctx, logger)
+			ctx.Locals("logger", logger)
 			return ctx.SendStatus(fiber.StatusUnauthorized)
 		}
 	}
@@ -61,20 +57,12 @@ func NewXnapHandler(config XnapConfig) fiber.Handler {
 		opts = append(opts, utils.WithHttpMethod(ctx.Method()))
 
 		logger.Intialize(opts...)
-
-		sess, err := store.Get(ctx)
-		if err != nil {
-			panic(err)
-		}
-		ctx.Locals("Session-ID", sess.ID())
-		session := utils.GetLoggingSession()
-		session.Save(ctx, &logger)
-		defer session.Flush(ctx)
+		ctx.Locals("logger", logger)
 
 		switch ctx.Method() {
 		case "POST":
 			err := ctx.Next()
-			session.Save(ctx, logger.Collect(ctx))
+			defer logger.Print(ctx)
 			return err
 		case "GET":
 			fallthrough
@@ -84,7 +72,7 @@ func NewXnapHandler(config XnapConfig) fiber.Handler {
 			fallthrough
 		default:
 			err := config.ErrorHandler(ctx)
-			session.Save(ctx, logger.Collect(ctx))
+			defer logger.Print(ctx)
 			return err
 		}
 	}
