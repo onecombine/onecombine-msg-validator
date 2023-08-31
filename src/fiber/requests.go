@@ -1,6 +1,7 @@
 package fiber
 
 import (
+	"encoding/json"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -49,13 +50,19 @@ func NewHandler(config Config) fiber.Handler {
 			logger.Msg.HttpStatus = utils.LOGGING_HTTPSTATUS_UNAUTHORIZED
 			logger.Msg.ErrorType = utils.LOGGING_ERRORTYPE_BUSINESSERROR
 			ctx.Locals("logger", logger)
-			return ctx.SendStatus(fiber.StatusUnauthorized)
+			err := APIError{
+				ErrorCode:        UNAUTHORIZED_ERROR_CODE,
+				ErrorDescription: UNAUTHORIZED_ERROR_DESC,
+			}
+
+			raw, _ := json.Marshal(err)
+			return ctx.Status(fiber.StatusUnauthorized).SendString(string(raw))
 		}
 	}
 
 	return func(ctx *fiber.Ctx) error {
 		apiKey := ctx.GetReqHeaders()["Liquid-Api-Key"]
-		acquirer := config.ApiKeys[apiKey]
+		acquirer, ok := config.ApiKeys[apiKey]
 
 		logger := utils.Logger{}
 
@@ -88,6 +95,13 @@ func NewHandler(config Config) fiber.Handler {
 		logger.Intialize(opts...)
 		ctx.Locals("logger", &logger)
 
+		// Missing or invalid API-KEY
+		if !ok {
+			err := config.ErrorHandler(ctx)
+			defer logger.Print(ctx)
+			return err
+		}
+
 		switch ctx.Method() {
 		case "GET":
 			if acquirer == nil {
@@ -118,7 +132,12 @@ func NewHandler(config Config) fiber.Handler {
 				} else {
 					logger.Msg.HttpStatus = utils.LOGGING_HTTPSTATUS_UNAUTHORIZED
 					logger.Msg.ErrorType = utils.LOGGING_ERRORTYPE_BUSINESSERROR
-					err := ctx.SendStatus(fiber.StatusUnauthorized)
+					errResp := APIError{
+						ErrorCode:        INVALID_SIGNATURE_ERROR_CODE,
+						ErrorDescription: INVALID_SIGNATURE_ERROR_DESC,
+					}
+					raw, _ := json.Marshal(errResp)
+					err := ctx.Status(fiber.StatusUnauthorized).SendString(string(raw))
 					defer logger.Print(ctx)
 					return err
 				}
