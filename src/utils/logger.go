@@ -73,7 +73,7 @@ func (logger *Logger) Print(ctx *fiber.Ctx) {
 	}
 
 	now := time.Now()
-	logger.Msg.ExecutionTimeMsec = uint64(now.Sub(logger.StartTime).Milliseconds())
+	logger.Msg.ExecutionTimeMsec = uint64(now.Sub(logger.StartTime).Microseconds())
 
 	raw, _ := json.Marshal(logger.Msg)
 	log.SetFlags(0)
