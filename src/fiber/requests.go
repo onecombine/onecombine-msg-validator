@@ -55,7 +55,7 @@ func NewHandler(config Config) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		apiKey := ctx.GetReqHeaders()["Liquid-Api-Key"]
-		acquirer := config.ApiKeys[apiKey]
+		acquirer, ok := config.ApiKeys[apiKey]
 
 		logger := utils.Logger{}
 
@@ -87,6 +87,12 @@ func NewHandler(config Config) fiber.Handler {
 
 		logger.Intialize(opts...)
 		ctx.Locals("logger", &logger)
+
+		if !ok {
+			err := config.ErrorHandler(ctx)
+			defer logger.Print(ctx)
+			return err
+		}
 
 		switch ctx.Method() {
 		case "GET":
