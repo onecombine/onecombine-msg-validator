@@ -50,7 +50,7 @@ func NewHandler(config Config) fiber.Handler {
 			logger.Msg.HttpStatus = utils.LOGGING_HTTPSTATUS_UNAUTHORIZED
 			logger.Msg.ErrorType = utils.LOGGING_ERRORTYPE_BUSINESSERROR
 			ctx.Locals("logger", logger)
-			err := UnauthorizedError{
+			err := APIError{
 				ErrorCode:        UNAUTHORIZED_ERROR_CODE,
 				ErrorDescription: UNAUTHORIZED_ERROR_DESC,
 			}
@@ -95,6 +95,7 @@ func NewHandler(config Config) fiber.Handler {
 		logger.Intialize(opts...)
 		ctx.Locals("logger", &logger)
 
+		// Missing or invalid API-KEY
 		if !ok {
 			err := config.ErrorHandler(ctx)
 			defer logger.Print(ctx)
@@ -131,7 +132,12 @@ func NewHandler(config Config) fiber.Handler {
 				} else {
 					logger.Msg.HttpStatus = utils.LOGGING_HTTPSTATUS_UNAUTHORIZED
 					logger.Msg.ErrorType = utils.LOGGING_ERRORTYPE_BUSINESSERROR
-					err := ctx.SendStatus(fiber.StatusUnauthorized)
+					errResp := APIError{
+						ErrorCode:        INVALID_SIGNATURE_ERROR_CODE,
+						ErrorDescription: INVALID_SIGNATURE_ERROR_DESC,
+					}
+					raw, _ := json.Marshal(errResp)
+					err := ctx.Status(fiber.StatusUnauthorized).SendString(string(raw))
 					defer logger.Print(ctx)
 					return err
 				}
