@@ -49,7 +49,13 @@ func NewHandler(config Config) fiber.Handler {
 			logger.Msg.HttpStatus = utils.LOGGING_HTTPSTATUS_UNAUTHORIZED
 			logger.Msg.ErrorType = utils.LOGGING_ERRORTYPE_BUSINESSERROR
 			ctx.Locals("logger", logger)
-			return ctx.SendStatus(fiber.StatusUnauthorized)
+			err := UnauthorizedError{
+				ErrorCode:        UNAUTHORIZED_ERROR_CODE,
+				ErrorDescription: UNAUTHORIZED_ERROR_DESC,
+			}
+
+			raw, _ := json.Marshal(err)
+			return ctx.Status(fiber.StatusUnauthorized).SendString(string(raw))
 		}
 	}
 
