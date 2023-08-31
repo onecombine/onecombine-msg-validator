@@ -102,6 +102,7 @@ func NewQueue(mode string) *Queue {
 				Brokers:      hosts,
 				Topic:        topic,
 				WriteTimeout: publishTimeout,
+				Async:        true,
 			}
 			kafkaConfig.Dialer = &kafka.Dialer{
 				DualStack:     false,
