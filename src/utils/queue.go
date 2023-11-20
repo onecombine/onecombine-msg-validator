@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -134,6 +135,7 @@ func (queue Queue) Publish(ctx context.Context, msg QueueMessage) error {
 func (queue Queue) Subscribe(ctx context.Context, consumer QueueMessageConsumer) {
 	for {
 		m, err := (*queue.KafkaReader).FetchMessage(ctx)
+		fmt.Println("KReader :", m)
 		if err != nil {
 			return
 		}
