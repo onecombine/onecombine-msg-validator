@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -135,7 +134,6 @@ func (queue Queue) Publish(ctx context.Context, msg QueueMessage) error {
 func (queue Queue) Subscribe(ctx context.Context, consumer QueueMessageConsumer) {
 	for {
 		m, err := (*queue.KafkaReader).FetchMessage(ctx)
-		fmt.Println("KReader :", m)
 		if err != nil {
 			return
 		}
@@ -143,13 +141,11 @@ func (queue Queue) Subscribe(ctx context.Context, consumer QueueMessageConsumer)
 		if len(m.Value) == 0 {
 			continue
 		}
-		fmt.Println("Message :", string(m.Value))
 		var message QueueMessage
 		err = json.Unmarshal(m.Value, &message)
 		if err != nil {
 			log.Printf("%v\n", err)
 		}
-		fmt.Println("Message Unmarshal :", message)
 		consumer.ProcessMessage(message)
 		err = (*queue.KafkaReader).CommitMessages(ctx, m)
 		if err != nil {
