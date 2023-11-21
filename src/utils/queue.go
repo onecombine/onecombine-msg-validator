@@ -143,13 +143,13 @@ func (queue Queue) Subscribe(ctx context.Context, consumer QueueMessageConsumer)
 		if len(m.Value) == 0 {
 			continue
 		}
-
+		fmt.Println("Message :", string(m.Value))
 		var message QueueMessage
 		err = json.Unmarshal(m.Value, &message)
 		if err != nil {
 			log.Printf("%v\n", err)
 		}
-
+		fmt.Println("Message Unmarshal :", message)
 		consumer.ProcessMessage(message)
 		err = (*queue.KafkaReader).CommitMessages(ctx, m)
 		if err != nil {
