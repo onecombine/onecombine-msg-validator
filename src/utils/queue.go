@@ -11,10 +11,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2"
+	"github.com/segmentio/kafka-go/sasl/plain"
 )
 
 const QUEUE_TOPIC string = "QUEUE_TOPIC"
 const QUEUE_HOST string = "QUEUE_HOST"
+const QUEUE_TYPE string = "QUEUE_TYPE"
 const QUEUE_PUBLISH_TIMEOUT string = "QUEUE_PUBLISH_TIMEOUT"
 const QUEUE_SUBSCRIBE_TIMEOUT string = "QUEUE_SUBSCRIBE_TIMEOUT"
 const QUEUE_CONSUMERGROUP_ID string = "QUEUE_CONSUMERGROUP_ID"
@@ -22,6 +24,12 @@ const QUEUE_READOFFSET string = "QUEUE_READOFFSET" // EARLIEST, LATEST
 
 const QUEUE_MODE_PUBLISHER string = "QUEUE_PUB"
 const QUEUE_MODE_SUBSCRIBER string = "QUEUE_SUB"
+
+var (
+	MSK        = "msk"
+	PLAIN      = "plain"
+	SASL_PLAIN = "sasl_plain"
+)
 
 type IKafkaReader interface {
 	FetchMessage(ctx context.Context) (kafka.Message, error)
@@ -66,17 +74,35 @@ func NewQueue(mode string) *Queue {
 	if err != nil {
 		return nil
 	}
-
+	queueType := GetEnv(QUEUE_TYPE, "dev")
 	topic := GetEnv(QUEUE_TOPIC, "notification-queue")
 	hosts := strings.Split(GetEnv(QUEUE_HOST, ""), ",")
 	group := GetEnv(QUEUE_CONSUMERGROUP_ID, "CG-0")
+	kafkaUsername := GetEnv("KAFKA_USERNAME", "user1")
+	kafkaPassword := GetEnv("KAFKA_PASSWORD", "")
 	publishTimeout, _ := time.ParseDuration(GetEnv(QUEUE_PUBLISH_TIMEOUT, "20s"))
 	subscribeTimeout, _ := time.ParseDuration(GetEnv(QUEUE_SUBSCRIBE_TIMEOUT, "20s"))
 	var offset int64
 	if offset = kafka.LastOffset; GetEnv(QUEUE_READOFFSET, "LATEST") == "EARLIEST" {
 		offset = kafka.FirstOffset
 	}
-
+	var dialer *kafka.Dialer
+	switch queueType {
+	case MSK:
+		dialer = &kafka.Dialer{
+			DualStack:     false,
+			SASLMechanism: aws_msk_iam_v2.NewMechanism(awsConfig),
+			TLS:           &tls.Config{},
+		}
+	case SASL_PLAIN:
+		dialer = &kafka.Dialer{
+			DualStack: false,
+			SASLMechanism: plain.Mechanism{
+				Username: kafkaUsername,
+				Password: kafkaPassword,
+			},
+		}
+	}
 	var queue Queue
 	switch mode {
 	case QUEUE_MODE_SUBSCRIBER:
@@ -88,11 +114,7 @@ func NewQueue(mode string) *Queue {
 				ReadBatchTimeout: subscribeTimeout,
 				StartOffset:      offset,
 			}
-			kafkaConfig.Dialer = &kafka.Dialer{
-				DualStack:     false,
-				SASLMechanism: aws_msk_iam_v2.NewMechanism(awsConfig),
-				TLS:           &tls.Config{},
-			}
+			kafkaConfig.Dialer = dialer
 			reader := CreateReader(kafkaConfig).(IKafkaReader)
 			queue.KafkaReader = &reader
 		}
@@ -104,11 +126,7 @@ func NewQueue(mode string) *Queue {
 				WriteTimeout: publishTimeout,
 				Async:        true,
 			}
-			kafkaConfig.Dialer = &kafka.Dialer{
-				DualStack:     false,
-				SASLMechanism: aws_msk_iam_v2.NewMechanism(awsConfig),
-				TLS:           &tls.Config{},
-			}
+			kafkaConfig.Dialer = dialer
 			writer := CreateWriter(kafkaConfig).(IKafkaWriter)
 			queue.KafkaWriter = &writer
 		}
