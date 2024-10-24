@@ -62,6 +62,12 @@ func NewHandler(config Config) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		apiKey := ctx.GetReqHeaders()["Liquid-Api-Key"]
+
+		// In the road map we
+		if apiKey == "" {
+			apiKey = ctx.GetReqHeaders()["X-Api-Key"]
+		}
+
 		acquirer, ok := config.ApiKeys[apiKey]
 
 		logger := utils.Logger{}
