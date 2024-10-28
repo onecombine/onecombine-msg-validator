@@ -18,7 +18,11 @@ type Config struct {
 }
 
 func GetAcquirerApiKey(ctx *fiber.Ctx) string {
-	return ctx.GetReqHeaders()["Liquid-Api-Key"]
+	apiKey, ok := ctx.GetReqHeaders()["X-Api-Key"]
+	if !ok {
+		apiKey = ctx.GetReqHeaders()["Liquid-Api-Key"]
+	}
+	return apiKey
 }
 
 func NewConfig(name string) *Config {
