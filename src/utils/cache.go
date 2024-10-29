@@ -34,6 +34,10 @@ type CacheQrValue struct {
 	CreateAt  string
 }
 
+type CacheRefValue struct {
+	QRID string
+}
+
 func NewCache() *Cache {
 	var instance Cache
 	db, _ := strconv.Atoi(GetEnv(REDIS_DEFAULT_DB, "0"))
@@ -80,6 +84,10 @@ func (cache Cache) QrKey(id string) string {
 	return fmt.Sprintf("QR-%s", id)
 }
 
+func (cache Cache) RefKey(acq_id, ref string) string {
+	return fmt.Sprintf("REF-%s-%s", acq_id, ref)
+}
+
 func (cache Cache) QrValue(id, ref, key, payee, partnerId, update, create string) string {
 	item := CacheQrValue{
 		Id:        id,
@@ -94,8 +102,25 @@ func (cache Cache) QrValue(id, ref, key, payee, partnerId, update, create string
 	return string(data)
 }
 
+func (cache Cache) RefValue(qrid string) string {
+	item := CacheRefValue{
+		QRID: qrid,
+	}
+	data, _ := json.Marshal(item)
+	return string(data)
+}
+
 func CacheQrValueFromString(data string) (*CacheQrValue, error) {
 	var value CacheQrValue
+	err := json.Unmarshal([]byte(data), &value)
+	if err != nil {
+		return nil, err
+	}
+	return &value, nil
+}
+
+func CacheRefValueFromString(data string) (*CacheRefValue, error) {
+	var value CacheRefValue
 	err := json.Unmarshal([]byte(data), &value)
 	if err != nil {
 		return nil, err
