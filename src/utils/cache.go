@@ -63,6 +63,15 @@ func (cache Cache) Get(key string) (string, error) {
 	return val, nil
 }
 
+func (cache Cache) Delete(key string) error {
+	_, err := cache.Client.Del(context.TODO(), key).Result()
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (cache Cache) QrKey(id string) string {
 	return fmt.Sprintf("QR-%s", id)
 }
