@@ -25,9 +25,13 @@ type Cache struct {
 }
 
 type CacheQrValue struct {
-	Id     string
-	Ref    string
-	ApiKey string
+	Id        string
+	Ref       string
+	ApiKey    string
+	Payee     string
+	PartnerId string
+	UpdateAt  string
+	CreateAt  string
 }
 
 func NewCache() *Cache {
@@ -76,8 +80,16 @@ func (cache Cache) QrKey(id string) string {
 	return fmt.Sprintf("QR-%s", id)
 }
 
-func (cache Cache) QrValue(id, ref, apiKey string) string {
-	item := CacheQrValue{Id: id, Ref: ref, ApiKey: apiKey}
+func (cache Cache) QrValue(id, ref, key, payee, partnerId, update, create string) string {
+	item := CacheQrValue{
+		Id:        id,
+		Ref:       ref,
+		ApiKey:    key,
+		Payee:     payee,
+		PartnerId: partnerId,
+		UpdateAt:  update,
+		CreateAt:  create,
+	}
 	data, _ := json.Marshal(item)
 	return string(data)
 }
