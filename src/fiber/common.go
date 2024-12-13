@@ -14,4 +14,5 @@ type XnapUtility struct {
 type AcquirerUtility struct {
 	validator *algorithms.Validator
 	id        string
+	hook      string
 }
