@@ -48,7 +48,7 @@ func NewConfig(name string) *Config {
 	return &config
 }
 
-func NewPartnerConfig(name string, s partners.PartnerService) *Config {
+func NewPartnerConfig(name string, s *partners.PartnerService) *Config {
 	var config Config
 	aws := utils.NewAwsSecretValues(nil)
 	config.ApiKeys = make(map[string]*AcquirerUtility)
