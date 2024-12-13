@@ -34,6 +34,7 @@ type CacheQrValue struct {
 	PartnerId    string
 	UpdateAt     string
 	CreateAt     string
+	AcquirerHook string
 }
 
 type CacheRefValue struct {
@@ -91,7 +92,7 @@ func (cache Cache) RefKey(ref string) string {
 	return fmt.Sprintf("REF-%s", ref)
 }
 
-func (cache Cache) QrValue(id, ref, key, payee, partnerId, amount, curr, update, create string) string {
+func (cache Cache) QrValue(id, ref, key, payee, partnerId, amount, curr, update, create, acqHook string) string {
 	item := CacheQrValue{
 		Id:           id,
 		Ref:          ref,
@@ -102,6 +103,7 @@ func (cache Cache) QrValue(id, ref, key, payee, partnerId, amount, curr, update,
 		CurrencyCode: curr,
 		UpdateAt:     update,
 		CreateAt:     create,
+		AcquirerHook: acqHook,
 	}
 	data, _ := json.Marshal(item)
 	return string(data)
