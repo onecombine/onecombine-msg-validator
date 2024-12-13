@@ -62,7 +62,7 @@ func NewPartnerConfig(name string, s *partners.PartnerService) *Config {
 
 	for _, a := range acqs {
 		validator := (algorithms.NewOneCombineHmac(a.Secret, int32(age))).(algorithms.Validator)
-		config.ApiKeys[a.ApiKey] = &AcquirerUtility{validator: &validator, id: a.Name, hook: a.NotificationHook}
+		config.ApiKeys[a.ApiKey] = &AcquirerUtility{validator: &validator, id: a.Name, Hook: a.NotificationHook}
 	}
 
 	config.ErrorHandler = nil
