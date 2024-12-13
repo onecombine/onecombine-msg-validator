@@ -31,7 +31,7 @@ type AcquirerProfile struct {
 	OrganizationID   uint   `json:"orgId"`
 }
 
-type partnerService struct {
+type PartnerService struct {
 	baseUrl  string
 	acqStore *MemoryStore
 	issStore *MemoryStore
@@ -44,15 +44,15 @@ var (
 const REFRESH_ACQUIRERS_SECS string = "REFRESH_ACQUIRERS_SECS"
 const REFRESH_ISSUERS_SECS string = "REFRESH_ISSUERS_SECS"
 
-func NewPartnerService(baseUrl string) *partnerService {
-	return &partnerService{
+func NewPartnerService(baseUrl string) *PartnerService {
+	return &PartnerService{
 		baseUrl:  baseUrl,
 		acqStore: NewMemoryStore(),
 		issStore: NewMemoryStore(),
 	}
 }
 
-func (s partnerService) ListAcquirers() ([]*AcquirerProfile, error) {
+func (s PartnerService) ListAcquirers() ([]*AcquirerProfile, error) {
 	response, err := http.Get(fmt.Sprintf("%s/v1/profile/acquirers", s.baseUrl))
 
 	if err != nil {
@@ -69,7 +69,7 @@ func (s partnerService) ListAcquirers() ([]*AcquirerProfile, error) {
 	return acquirers, nil
 }
 
-func (s partnerService) ListIssuers() ([]*IssuerProfile, error) {
+func (s PartnerService) ListIssuers() ([]*IssuerProfile, error) {
 	response, err := http.Get(fmt.Sprintf("%s/v1/profile/issuers", s.baseUrl))
 
 	if err != nil {
@@ -86,7 +86,7 @@ func (s partnerService) ListIssuers() ([]*IssuerProfile, error) {
 	return issuers, nil
 }
 
-func (s partnerService) refreshAcquirers() error {
+func (s PartnerService) refreshAcquirers() error {
 	response, err := http.Get(fmt.Sprintf("%s%s", s.baseUrl, API_LIST_ACQUIRER_PATH))
 
 	if err != nil {
@@ -107,11 +107,11 @@ func (s partnerService) refreshAcquirers() error {
 	return nil
 }
 
-func (s partnerService) refreshIssuers() error {
+func (s PartnerService) refreshIssuers() error {
 	return nil
 }
 
-func (s partnerService) startAcquirerScheduler() {
+func (s PartnerService) StartAcquirerScheduler() {
 	period, err := strconv.Atoi(os.Getenv(REFRESH_ACQUIRERS_SECS))
 	if err != nil {
 		period = 15 // Default
@@ -125,7 +125,7 @@ func (s partnerService) startAcquirerScheduler() {
 	}()
 }
 
-func (s partnerService) startIssuerScheduler() {
+func (s PartnerService) StartIssuerScheduler() {
 	period, err := strconv.Atoi(os.Getenv(REFRESH_ISSUERS_SECS))
 	if err != nil {
 		period = 15 // Default

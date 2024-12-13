@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/onecombine/onecombine-msg-validator/src/algorithms"
+	"github.com/onecombine/onecombine-msg-validator/src/partners"
 	"github.com/onecombine/onecombine-msg-validator/src/utils"
 )
 
@@ -38,6 +39,32 @@ func NewConfig(name string) *Config {
 		validator := (algorithms.NewOneCombineHmac(val.SecretKey, int32(age))).(algorithms.Validator)
 		config.ApiKeys[key] = &AcquirerUtility{validator: &validator, id: val.Id}
 	}
+	config.ErrorHandler = nil
+
+	config.Xnap.ApiKey = aws.XnapApiKey
+	xnapVal := (algorithms.NewOneCombineHmac(aws.XnapSecretKey, int32(age))).(algorithms.Validator)
+	config.Xnap.Validator = &xnapVal
+	config.Name = name
+	return &config
+}
+
+func NewPartnerConfig(name string, s partners.PartnerService) *Config {
+	var config Config
+	aws := utils.NewAwsSecretValues(nil)
+	config.ApiKeys = make(map[string]*AcquirerUtility)
+	acqs, err := s.ListAcquirers()
+	if err != nil {
+		panic(err)
+	}
+
+	exp := utils.GetEnv(MESSAGE_EXPIRATION_MSEC, "600000")
+	age, _ := strconv.Atoi(exp)
+
+	for _, a := range acqs {
+		validator := (algorithms.NewOneCombineHmac(a.Secret, int32(age))).(algorithms.Validator)
+		config.ApiKeys[a.ApiKey] = &AcquirerUtility{validator: &validator, id: a.Name}
+	}
+
 	config.ErrorHandler = nil
 
 	config.Xnap.ApiKey = aws.XnapApiKey

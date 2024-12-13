@@ -11,6 +11,7 @@ require (
 	github.com/segmentio/kafka-go v0.4.42
 	github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2 v0.1.0
 	github.com/stretchr/testify v1.8.4
+	github.com/valyala/fasthttp v1.48.0
 )
 
 require (
@@ -37,7 +38,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.48.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
