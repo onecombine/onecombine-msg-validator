@@ -32,6 +32,19 @@ func (ms *MemoryStore) Get(key string) (interface{}, error) {
 	return value, nil
 }
 
+func (ms *MemoryStore) Keys() []string {
+	ms.mu.RLock()
+	defer ms.mu.Unlock()
+
+	keys := make([]string, 0)
+
+	for k, _ := range ms.store {
+		keys = append(keys, k)
+	}
+
+	return keys
+}
+
 func (ms *MemoryStore) Delete(key string) {
 	ms.mu.Lock()
 	defer ms.mu.Unlock()
