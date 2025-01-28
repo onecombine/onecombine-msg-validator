@@ -161,3 +161,15 @@ func (s PartnerService) StartIssuerScheduler() {
 		}
 	}()
 }
+
+func (s PartnerService) GetAcquirerStore() *MemoryStore {
+	return s.acqStore
+}
+
+func (s PartnerService) GetIssuerStore() *MemoryStore {
+	return s.issStore
+}
+
+func (s PartnerService) WaitForCompletion() {
+	s.wg.Wait()
+}
