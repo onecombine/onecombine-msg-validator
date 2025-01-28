@@ -40,8 +40,11 @@ func (a *acquirerConsumer) Process(e *AcquirerProfileEvent) error {
 func (i *acquirerConsumer) Subscribe(wg *sync.WaitGroup) chan string {
 
 	cls := make(chan string)
+	topic := i.cfg.TopicName
 
 	go func() {
+		fmt.Printf("Subscribe to issuer profile event stream, topic: %s\n", topic)
+
 		for {
 			select {
 			case <-cls:
@@ -51,6 +54,7 @@ func (i *acquirerConsumer) Subscribe(wg *sync.WaitGroup) chan string {
 				close(cls)
 				return
 			default:
+				fmt.Println("Fetching message")
 				msg, err := i.kreader.FetchMessage(context.TODO())
 				if err != nil {
 					fmt.Printf("Error fetch message from kafka, error: %v\n", err)
@@ -73,7 +77,7 @@ func (i *acquirerConsumer) Subscribe(wg *sync.WaitGroup) chan string {
 				}
 
 				i.kreader.CommitMessages(context.TODO(), msg)
-
+				time.Sleep(100 * time.Millisecond)
 			}
 		}
 

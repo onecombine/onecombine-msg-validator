@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -32,9 +33,12 @@ type AcquirerProfile struct {
 }
 
 type PartnerService struct {
-	baseUrl  string
-	acqStore *MemoryStore
-	issStore *MemoryStore
+	baseUrl     string
+	acqStore    *MemoryStore
+	issStore    *MemoryStore
+	issConsumer IssuerProfileConsumer
+	acqConsumer AcquirerProfileConsumer
+	wg          *sync.WaitGroup
 }
 
 var (
@@ -44,12 +48,31 @@ var (
 const REFRESH_ACQUIRERS_SECS string = "REFRESH_ACQUIRERS_SECS"
 const REFRESH_ISSUERS_SECS string = "REFRESH_ISSUERS_SECS"
 
-func NewPartnerService(baseUrl string) *PartnerService {
-	return &PartnerService{
-		baseUrl:  baseUrl,
-		acqStore: NewMemoryStore(),
-		issStore: NewMemoryStore(),
+func NewPartnerService(baseUrl string, issKConfig, acqKConfig *KafkaConfig) *PartnerService {
+	issStore := NewMemoryStore()
+	acqStore := NewMemoryStore()
+
+	issuerConsumer := NewKafkaIssuerProfileConsumer(issStore, issKConfig)
+	acquirerConsumer := NewKafkaAcquirerProfileConsumer(acqStore, acqKConfig)
+
+	var wg sync.WaitGroup
+
+	service := &PartnerService{
+		baseUrl:     baseUrl,
+		acqStore:    acqStore,
+		issStore:    issStore,
+		issConsumer: issuerConsumer,
+		acqConsumer: acquirerConsumer,
+		wg:          &wg,
 	}
+
+	service.refreshAcquirers()
+	service.refreshIssuers()
+
+	issuerConsumer.Subscribe(service.wg)
+	acquirerConsumer.Subscribe(service.wg)
+
+	return service
 }
 
 func (s PartnerService) ListAcquirers() ([]*AcquirerProfile, error) {

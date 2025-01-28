@@ -62,6 +62,7 @@ func (i *issuerConsumer) Subscribe(wg *sync.WaitGroup) chan string {
 				close(cls)
 				return
 			default:
+				fmt.Println("Fetching message")
 				msg, err := i.kreader.FetchMessage(context.TODO())
 				if err != nil {
 					fmt.Printf("Error fetch message from kafka, error: %v\n", err)
@@ -84,7 +85,7 @@ func (i *issuerConsumer) Subscribe(wg *sync.WaitGroup) chan string {
 				}
 
 				i.kreader.CommitMessages(context.TODO(), msg)
-
+				time.Sleep(100 * time.Millisecond)
 			}
 		}
 
