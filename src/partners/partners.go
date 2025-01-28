@@ -12,24 +12,46 @@ import (
 )
 
 type IssuerProfile struct {
-	ID             uint   `json:"id"`
-	IssID          string `json:"issId"`
-	Name           string `json:"name"`
-	Description    string `json:"description"`
-	ApiKey         string `json:"apiKey"`
-	Secret         string `json:"secret"`
-	OrganizationID uint   `json:"orgId"`
+	ID                     uint   `json:"id"`
+	IssuerID               string `json:"issuer_id"`
+	Name                   string `json:"name"`
+	Description            string `json:"description"`
+	ApiKey                 string `json:"apiKey"`
+	Secret                 string `json:"secret"`
+	OrganizationID         uint   `json:"orgId"`
+	FXName                 string `json:"fx_name"`
+	FXValue                string `json:"fx_value"`
+	SettlementFee          string `json:"settlement_fee"`
+	SettlementType         string `json:"settlement_type"`
+	SettlementWaived       bool   `json:"settlement_waived"`
+	SwitchingFee           string `json:"switching_fee"`
+	SwitchingType          string `json:"switching_type"`
+	SwitchingWaived        bool   `json:"switching_waived"`
+	SettlementCurrencyCode string `json:"settlement_currency_code"`
+	SettlementReportBucket string `json:"settlement_report_bucket"`
+	Created                string `json:"created"`
+	Modified               string `json:"modified"`
 }
 
 type AcquirerProfile struct {
-	ID               uint   `json:"id"`
-	AcqID            string `json:"acqId"`
-	Name             string `json:"name"`
-	Description      string `json:"description"`
-	ApiKey           string `json:"apiKey"`
-	Secret           string `json:"secret"`
-	NotificationHook string `json:"hook"`
-	OrganizationID   uint   `json:"orgId"`
+	ID                     uint   `json:"id"`
+	AcqID                  string `json:"acqId"`
+	Name                   string `json:"name"`
+	Description            string `json:"description"`
+	ApiKey                 string `json:"apiKey"`
+	Secret                 string `json:"secret"`
+	NotificationHook       string `json:"hook"`
+	OrganizationID         uint   `json:"orgId"`
+	SettlementFee          string `json:"settlement_fee"`
+	SettlementType         string `json:"settlement_type"`
+	SettlementWaived       bool   `json:"settlement_waived"`
+	SwitchingFee           string `json:"switching_fee"`
+	SwitchingType          string `json:"switching_type"`
+	SwitchingWaived        bool   `json:"switching_waived"`
+	SettlementCurrencyCode string `json:"settlement_currency_code"`
+	SettlementReportBucket string `json:"settlement_report_bucket"`
+	Created                string `json:"created"`
+	Modified               string `json:"modified"`
 }
 
 type PartnerService struct {
@@ -43,6 +65,7 @@ type PartnerService struct {
 
 var (
 	API_LIST_ACQUIRER_PATH = "/v1/profile/acquirers"
+	API_LIST_ISSUER_PATH   = "/v1/profile/issuers"
 )
 
 const REFRESH_ACQUIRERS_SECS string = "REFRESH_ACQUIRERS_SECS"
@@ -131,6 +154,23 @@ func (s PartnerService) refreshAcquirers() error {
 }
 
 func (s PartnerService) refreshIssuers() error {
+	response, err := http.Get(fmt.Sprintf("%s%s", s.baseUrl, API_LIST_ISSUER_PATH))
+
+	if err != nil {
+		return err
+	}
+
+	responseData, err := io.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+
+	var issuers []*IssuerProfile
+	json.Unmarshal(responseData, &issuers)
+
+	for _, iss := range issuers {
+		s.issStore.Set(iss.ApiKey, iss)
+	}
 	return nil
 }
 
