@@ -52,7 +52,11 @@ func (i *issuerConsumer) Subscribe(wg *sync.WaitGroup) chan string {
 
 	cls := make(chan string)
 
+	topic := i.cfg.TopicName
+
 	go func() {
+		fmt.Printf("Subscribe to issuer profile event stream, topic: %s\n", topic)
+
 		for {
 			select {
 			case <-cls:
