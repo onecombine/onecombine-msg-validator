@@ -98,6 +98,26 @@ func NewPartnerService(baseUrl string, issKConfig, acqKConfig *KafkaConfig) *Par
 	return service
 }
 
+func NewPartnewServiceWithoutEvent(baseUrl string) *PartnerService {
+
+	issStore := NewMemoryStore()
+	acqStore := NewMemoryStore()
+
+	service := &PartnerService{
+		baseUrl:     baseUrl,
+		acqStore:    acqStore,
+		issStore:    issStore,
+		issConsumer: nil,
+		acqConsumer: nil,
+		wg:          nil,
+	}
+
+	service.refreshAcquirers()
+	service.refreshIssuers()
+
+	return service
+}
+
 func (s PartnerService) ListAcquirers() ([]*AcquirerProfile, error) {
 	response, err := http.Get(fmt.Sprintf("%s/v1/profile/acquirers", s.baseUrl))
 
