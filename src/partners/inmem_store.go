@@ -34,7 +34,7 @@ func (ms *MemoryStore) Get(key string) (interface{}, error) {
 
 func (ms *MemoryStore) Keys() []string {
 	ms.mu.RLock()
-	defer ms.mu.Unlock()
+	defer ms.mu.RUnlock()
 
 	keys := make([]string, 0)
 
