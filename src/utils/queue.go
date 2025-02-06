@@ -49,6 +49,7 @@ type Queue struct {
 type QueueMessage struct {
 	WebHookUrl string `json:"webhook_url" binding:"required"`
 	Data       string `json:"data" binding:"required"`
+	Event      string `json:"event" binding:"required"`
 }
 
 type QueueMessageConsumer interface {
@@ -130,10 +131,6 @@ func NewQueue(mode string) *Queue {
 			writer := CreateWriter(kafkaConfig).(IKafkaWriter)
 			queue.KafkaWriter = &writer
 		}
-	}
-
-	if err != nil {
-		log.Fatal("Queue: failed to dial leader:", err)
 	}
 
 	return &queue
