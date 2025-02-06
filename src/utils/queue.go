@@ -29,6 +29,9 @@ var (
 	MSK        = "msk"
 	PLAIN      = "plain"
 	SASL_PLAIN = "sasl_plain"
+
+	NOTIFICATION_EVENT_PAYMENT = "PAYMENT"
+	NOTIFICATION_EVENT_REFUND  = "REFUND"
 )
 
 type IKafkaReader interface {
