@@ -120,7 +120,7 @@ func NewQueue(mode string) *Queue {
 			}
 			kafkaConfig.Dialer = dialer
 			reader := CreateReader(kafkaConfig).(IKafkaReader)
-			queue.KafkaReader = &reader
+			queue.KafkaReader = reader
 		}
 	case QUEUE_MODE_PUBLISHER:
 		{
@@ -132,7 +132,7 @@ func NewQueue(mode string) *Queue {
 			}
 			kafkaConfig.Dialer = dialer
 			writer := CreateWriter(kafkaConfig).(IKafkaWriter)
-			queue.KafkaWriter = &writer
+			queue.KafkaWriter = writer
 		}
 	}
 
@@ -145,13 +145,13 @@ func (queue Queue) Publish(ctx context.Context, msg QueueMessage) error {
 		return err
 	}
 
-	err = (*queue.KafkaWriter).WriteMessages(ctx, kafka.Message{Value: raw})
+	err = (queue.KafkaWriter).WriteMessages(ctx, kafka.Message{Value: raw})
 	return err
 }
 
 func (queue Queue) Subscribe(ctx context.Context, consumer QueueMessageConsumer) {
 	for {
-		m, err := (*queue.KafkaReader).FetchMessage(ctx)
+		m, err := (queue.KafkaReader).FetchMessage(ctx)
 		if err != nil {
 			return
 		}
@@ -165,7 +165,7 @@ func (queue Queue) Subscribe(ctx context.Context, consumer QueueMessageConsumer)
 			log.Printf("%v\n", err)
 		}
 		consumer.ProcessMessage(message)
-		err = (*queue.KafkaReader).CommitMessages(ctx, m)
+		err = (queue.KafkaReader).CommitMessages(ctx, m)
 		if err != nil {
 			log.Printf("%v\n", err)
 		}
@@ -173,6 +173,6 @@ func (queue Queue) Subscribe(ctx context.Context, consumer QueueMessageConsumer)
 }
 
 func (queue Queue) Close() error {
-	err := (*queue.KafkaReader).Close()
+	err := (queue.KafkaReader).Close()
 	return err
 }
