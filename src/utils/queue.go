@@ -73,13 +73,19 @@ func createWriter(config kafka.WriterConfig) interface{} {
 var CreateReader = createReader
 var CreateWriter = createWriter
 
-func NewQueue(mode string) *Queue {
+func NewQueue(mode string, ops ...string) *Queue {
 	awsConfig, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
 		return nil
 	}
 	queueType := GetEnv(QUEUE_TYPE, "dev")
-	topic := GetEnv(QUEUE_TOPIC, "notification-queue")
+	var topic string
+	if len(ops) > 0 {
+		topic = ops[0]
+	} else {
+		topic = GetEnv(QUEUE_TOPIC, "notification-queue")
+	}
+
 	hosts := strings.Split(GetEnv(QUEUE_HOST, ""), ",")
 	group := GetEnv(QUEUE_CONSUMERGROUP_ID, "CG-0")
 	kafkaUsername := GetEnv("KAFKA_USERNAME", "user1")
