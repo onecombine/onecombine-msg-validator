@@ -45,8 +45,8 @@ type IKafkaWriter interface {
 }
 
 type Queue struct {
-	KafkaReader *IKafkaReader
-	KafkaWriter *IKafkaWriter
+	KafkaReader IKafkaReader
+	KafkaWriter IKafkaWriter
 }
 
 type QueueMessage struct {
