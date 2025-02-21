@@ -71,7 +71,15 @@ type acquirerConsumer struct {
 
 // Process implements IssuerProfileConsumer.
 func (a *acquirerConsumer) Process(e *AcquirerProfileEvent) error {
-	a.store.Set(e.AcqID, eventToAcquirerProfile(e))
+	var key string
+	for k, v := range a.store.GetAll() {
+		if v.(*AcquirerProfile).AcqID == e.AcqID {
+			key = k
+			break
+		}
+	}
+
+	a.store.Set(key, eventToAcquirerProfile(e))
 	return nil
 }
 

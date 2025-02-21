@@ -85,10 +85,17 @@ type issuerConsumer struct {
 
 // Process implements IssuerProfileConsumer.
 func (i *issuerConsumer) Process(e *IssuerProfileEvent) error {
-	acq := eventToIssuerProfile(e)
-	i.store.Set(e.IssuerID, eventToIssuerProfile(e))
+
+	var key string
+	for k, v := range i.store.GetAll() {
+		if v.(*IssuerProfile).IssuerID == e.IssuerID {
+			key = k
+			break
+		}
+	}
+
+	i.store.Set(key, eventToIssuerProfile(e))
 	fmt.Printf("Update issuer profile in memory storage (IssuerID: %s)\n", e.IssuerID)
-	printDebug(acq)
 	return nil
 }
 
