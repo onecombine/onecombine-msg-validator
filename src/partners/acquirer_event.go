@@ -15,8 +15,47 @@ import (
 	"github.com/segmentio/kafka-go/sasl/plain"
 )
 
+/* for reference
+{
+	"id":2,
+	"acqId":"100090",
+	"name":"Legacy Mock Acquirer",
+	"description":"legacy mock acquirer for integration testing",
+	"apiKey":"ABCD-ABCD-ABCD",
+	"secret":"aaaa",
+	"hook":"",
+	"orgId":4,
+	"settlement_fee":"0.60",
+	"settlement_type":"PCT",
+	"settlement_waived":false,
+	"switching_fee":"0.61",
+	"switching_type":"ABS",
+	"switching_waived":true,
+	"settlement_currency_code":"THB",
+	"settlement_report_bucket":"aws-1cb-th-dev-s3-sandbox-acquirer-report-100090",
+	"created":"","modified":"2025-02-21T06:39:00Z"}
+
+*/
+
 type AcquirerProfileEvent struct {
-	AcquirerID string
+	ID                     uint   `json:"id"`
+	AcqID                  string `json:"acqId"`
+	Name                   string `json:"name"`
+	Description            string `json:"description"`
+	ApiKey                 string `json:"apiKey"`
+	Secret                 string `json:"secret"`
+	NotificationHook       string `json:"hook"`
+	OrganizationID         uint   `json:"orgId"`
+	SettlementFee          string `json:"settlement_fee"`
+	SettlementType         string `json:"settlement_type"`
+	SettlementWaived       bool   `json:"settlement_waived"`
+	SwitchingFee           string `json:"switching_fee"`
+	SwitchingType          string `json:"switching_type"`
+	SwitchingWaived        bool   `json:"switching_waived"`
+	SettlementCurrencyCode string `json:"settlement_currency_code"`
+	SettlementReportBucket string `json:"settlement_report_bucket"`
+	Created                string `json:"created"`
+	Modified               string `json:"modified"`
 }
 
 type AcquirerProfileConsumer interface {
@@ -32,7 +71,7 @@ type acquirerConsumer struct {
 
 // Process implements IssuerProfileConsumer.
 func (a *acquirerConsumer) Process(e *AcquirerProfileEvent) error {
-	a.store.Set(e.AcquirerID, e)
+	a.store.Set(e.AcqID, eventToAcquirerProfile(e))
 	return nil
 }
 
@@ -137,5 +176,27 @@ func NewKafkaAcquirerProfileConsumer(store *MemoryStore, cfg *KafkaConfig) Acqui
 		kreader: reader,
 		store:   store,
 		cfg:     cfg,
+	}
+}
+
+func eventToAcquirerProfile(e *AcquirerProfileEvent) *AcquirerProfile {
+	return &AcquirerProfile{
+		ID:                     e.ID,
+		AcqID:                  e.AcqID,
+		Name:                   e.Name,
+		Description:            e.Description,
+		ApiKey:                 e.ApiKey,
+		Secret:                 e.Secret,
+		OrganizationID:         e.OrganizationID,
+		SettlementFee:          e.SettlementFee,
+		SettlementType:         e.SettlementType,
+		SettlementWaived:       e.SettlementWaived,
+		SwitchingFee:           e.SwitchingFee,
+		SwitchingType:          e.SwitchingType,
+		SwitchingWaived:        e.SettlementWaived,
+		SettlementCurrencyCode: e.SettlementCurrencyCode,
+		SettlementReportBucket: e.SettlementReportBucket,
+		Created:                e.Created,
+		Modified:               e.Modified,
 	}
 }

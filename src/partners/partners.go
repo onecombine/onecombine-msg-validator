@@ -12,25 +12,26 @@ import (
 )
 
 type IssuerProfile struct {
-	ID                     uint   `json:"id"`
-	IssuerID               string `json:"issuer_id"`
-	Name                   string `json:"name"`
-	Description            string `json:"description"`
-	ApiKey                 string `json:"apiKey"`
-	Secret                 string `json:"secret"`
-	OrganizationID         uint   `json:"orgId"`
-	FXName                 string `json:"fx_name"`
-	FXValue                string `json:"fx_value"`
-	SettlementFee          string `json:"settlement_fee"`
-	SettlementType         string `json:"settlement_type"`
-	SettlementWaived       bool   `json:"settlement_waived"`
-	SwitchingFee           string `json:"switching_fee"`
-	SwitchingType          string `json:"switching_type"`
-	SwitchingWaived        bool   `json:"switching_waived"`
-	SettlementCurrencyCode string `json:"settlement_currency_code"`
-	SettlementReportBucket string `json:"settlement_report_bucket"`
-	Created                string `json:"created"`
-	Modified               string `json:"modified"`
+	ID                        uint   `json:"id"`
+	IssuerID                  string `json:"issuer_id"`
+	Name                      string `json:"name"`
+	Description               string `json:"description"`
+	ApiKey                    string `json:"apiKey"`
+	Secret                    string `json:"secret"`
+	OrganizationID            uint   `json:"orgId"`
+	FXName                    string `json:"fx_name"`
+	FXValue                   string `json:"fx_value"`
+	SettlementFee             string `json:"settlement_fee"`
+	SettlementType            string `json:"settlement_type"`
+	SettlementWaived          bool   `json:"settlement_waived"`
+	SwitchingFee              string `json:"switching_fee"`
+	SwitchingType             string `json:"switching_type"`
+	SwitchingWaived           bool   `json:"switching_waived"`
+	SettlementCurrencyCode    string `json:"settlement_currency_code"`
+	SettlementReportBucket    string `json:"settlement_report_bucket"`
+	RefundNotificationWebHook string `json:"refund_notification_webhook"`
+	Created                   string `json:"created"`
+	Modified                  string `json:"modified"`
 }
 
 type AcquirerProfile struct {
@@ -63,7 +64,7 @@ type PartnerService struct {
 	wg          *sync.WaitGroup
 }
 
-var (
+const (
 	API_LIST_ACQUIRER_PATH = "/v1/profile/acquirers"
 	API_LIST_ISSUER_PATH   = "/v1/profile/issuers"
 )

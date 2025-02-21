@@ -26,8 +26,50 @@ type KafkaConfig struct {
 	ReadOffset      string
 }
 
+/*
+{"id":4,
+"issuer_id":"200099",
+"name":"mock issuer for test",
+"description":"Mock issuer",
+"apiKey":"0439BA10-205B-46AE-9963-1FB22642D8AF",
+"secret":"6dc010a7952422a",
+"orgId":4,
+"fx_name":"RUBTHB",
+"fx_value":"0.35",
+"settlement_fee":"0.6",
+"settlement_type":"PCT",
+"settlement_waived":false,
+"switching_fee":"0.65",
+"switching_type":"ABS",
+"switching_waived":false,
+"settlement_currency_code":"RUB",
+"settlement_report_bucket":"aws-1cb-th-dev-s3-sandbox-issuer-report-200099",
+"created":"2025-01-01T00:00:00Z",
+"modified":"2025-02-21T05:21:36Z"}
+
+*/
+
 type IssuerProfileEvent struct {
-	IssuerID string
+	ID                        uint   `json:"id"`
+	IssuerID                  string `json:"issuer_id"`
+	Name                      string `json:"name"`
+	Description               string `json:"description"`
+	ApiKey                    string `json:"apiKey"`
+	Secret                    string `json:"secret"`
+	OrganizationID            uint   `json:"orgId"`
+	FxName                    string `json:"fx_name"`
+	FXValue                   string `json:"fx_value"`
+	SettlementFee             string `json:"settlement_fee"`
+	SettlementFeeType         string `json:"settlement_type"`
+	SettlementFeeWaived       bool   `json:"settlement_waived"`
+	SwitchingFee              string `json:"switching_fee"`
+	SwitchingFeeType          string `json:"switching_type"`
+	SwitchingFeeWaived        string `json:"switching_waived"`
+	SettlementCurrencyCode    string `json:"settlement_currency_code"`
+	SettlementReportBucket    string `json:"settlement_report_bucket"`
+	RefundNotificationWebHook string `json:"refund_notification_web_hook"`
+	Created                   string `json:"created"`
+	Modified                  string `json:"modified"`
 }
 
 type IssuerProfileConsumer interface {
@@ -43,7 +85,7 @@ type issuerConsumer struct {
 
 // Process implements IssuerProfileConsumer.
 func (i *issuerConsumer) Process(e *IssuerProfileEvent) error {
-	i.store.Set(e.IssuerID, e)
+	i.store.Set(e.IssuerID, eventToIssuerProfile(e))
 	return nil
 }
 
@@ -149,5 +191,30 @@ func NewKafkaIssuerProfileConsumer(store *MemoryStore, cfg *KafkaConfig) IssuerP
 		kreader: reader,
 		store:   store,
 		cfg:     cfg,
+	}
+}
+
+func eventToIssuerProfile(e *IssuerProfileEvent) *IssuerProfile {
+	return &IssuerProfile{
+		ID:                        e.ID,
+		IssuerID:                  e.IssuerID,
+		Name:                      e.Name,
+		Description:               e.Description,
+		ApiKey:                    e.ApiKey,
+		Secret:                    e.Secret,
+		OrganizationID:            e.OrganizationID,
+		FXName:                    e.FxName,
+		FXValue:                   e.FXValue,
+		SettlementFee:             e.SettlementFee,
+		SettlementType:            e.SettlementFeeType,
+		SettlementWaived:          e.SettlementFeeWaived,
+		SwitchingFee:              e.SwitchingFee,
+		SwitchingType:             e.SwitchingFeeType,
+		SwitchingWaived:           e.SettlementFeeWaived,
+		SettlementCurrencyCode:    e.SettlementCurrencyCode,
+		SettlementReportBucket:    e.SettlementReportBucket,
+		RefundNotificationWebHook: e.RefundNotificationWebHook,
+		Created:                   e.Created,
+		Modified:                  e.Modified,
 	}
 }
