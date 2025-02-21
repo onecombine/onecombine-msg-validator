@@ -124,7 +124,7 @@ func NewKafkaIssuerProfileConsumer(store *MemoryStore, cfg *KafkaConfig) IssuerP
 	}
 
 	var offset int64
-	if offset = kafka.LastOffset; cfg.ReadOffset == "EARLIEST" {
+	if offset = kafka.LastOffset; cfg.ReadOffset == "LATEST" {
 		offset = kafka.LastOffset
 	}
 
