@@ -85,7 +85,10 @@ type issuerConsumer struct {
 
 // Process implements IssuerProfileConsumer.
 func (i *issuerConsumer) Process(e *IssuerProfileEvent) error {
+	acq := eventToIssuerProfile(e)
 	i.store.Set(e.IssuerID, eventToIssuerProfile(e))
+	fmt.Printf("Update issuer profile in memory storage (IssuerID: %s)\n", e.IssuerID)
+	printDebug(acq)
 	return nil
 }
 
@@ -217,4 +220,12 @@ func eventToIssuerProfile(e *IssuerProfileEvent) *IssuerProfile {
 		Created:                   e.Created,
 		Modified:                  e.Modified,
 	}
+}
+
+func printDebug(e *IssuerProfile) {
+	fmt.Println("====================== DEBUG  =========================")
+	fmt.Printf("IssuerID: %s", e.IssuerID)
+	fmt.Printf("Settlement Fee: %s", e.SettlementFee)
+	// TODO: complete all fields
+	fmt.Println("=======================================================")
 }
