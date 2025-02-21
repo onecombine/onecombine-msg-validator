@@ -112,7 +112,7 @@ func (i *acquirerConsumer) Subscribe(wg *sync.WaitGroup) chan string {
 				if err != nil {
 					fmt.Printf("Unable to process profile event, error: %v\n", err)
 				} else {
-					fmt.Printf("Process acquirer profile (id: %s) successfully\n", event.AcquirerID)
+					fmt.Printf("Process acquirer profile (id: %s) successfully\n", event.AcqID)
 				}
 
 				i.kreader.CommitMessages(context.TODO(), msg)
