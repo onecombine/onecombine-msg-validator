@@ -112,7 +112,7 @@ func NewKafkaAcquirerProfileConsumer(store *MemoryStore, cfg *KafkaConfig) Acqui
 	}
 
 	var offset int64
-	if offset = kafka.LastOffset; cfg.ReadOffset == "EARLIEST" {
+	if offset = kafka.LastOffset; cfg.ReadOffset == "LATEST" {
 		offset = kafka.LastOffset
 	}
 
@@ -136,5 +136,6 @@ func NewKafkaAcquirerProfileConsumer(store *MemoryStore, cfg *KafkaConfig) Acqui
 	return &acquirerConsumer{
 		kreader: reader,
 		store:   store,
+		cfg:     cfg,
 	}
 }

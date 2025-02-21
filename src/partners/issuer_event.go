@@ -148,5 +148,6 @@ func NewKafkaIssuerProfileConsumer(store *MemoryStore, cfg *KafkaConfig) IssuerP
 	return &issuerConsumer{
 		kreader: reader,
 		store:   store,
+		cfg:     cfg,
 	}
 }
