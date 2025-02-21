@@ -45,6 +45,12 @@ func (ms *MemoryStore) Keys() []string {
 	return keys
 }
 
+func (ms *MemoryStore) GetAll() map[string]interface{} {
+	ms.mu.RLock()
+	defer ms.mu.RUnlock()
+	return ms.store
+}
+
 func (ms *MemoryStore) Delete(key string) {
 	ms.mu.Lock()
 	defer ms.mu.Unlock()
