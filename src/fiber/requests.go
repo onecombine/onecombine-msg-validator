@@ -2,6 +2,7 @@ package fiber
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -60,9 +61,24 @@ func NewPartnerConfig(name string, s *partners.PartnerService) *Config {
 	exp := utils.GetEnv(MESSAGE_EXPIRATION_MSEC, "600000")
 	age, _ := strconv.Atoi(exp)
 
+	fmt.Println("[DEBUG] List acquirer profile")
+
 	for _, a := range acqs {
+		fmt.Printf("AcqID: %s APIKey: %s Secret: %s", a.AcqID, a.ApiKey, a.Secret)
 		validator := (algorithms.NewOneCombineHmac(a.Secret, int32(age))).(algorithms.Validator)
 		config.ApiKeys[a.ApiKey] = &AcquirerUtility{validator: &validator, id: a.Name, Hook: a.NotificationHook}
+	}
+
+	// Issuers
+	iss, err := s.ListIssuers()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("[DEBUG] List issuer profile")
+	for _, i := range iss {
+		fmt.Printf("IssuerID: %s APIKey: %s Secret: %s", i.IssuerID, i.ApiKey, i.Secret)
+		validator := (algorithms.NewOneCombineHmac(i.Secret, int32(age))).(algorithms.Validator)
+		config.ApiKeys[i.ApiKey] = &AcquirerUtility{validator: &validator, id: i.Name}
 	}
 
 	config.ErrorHandler = nil
