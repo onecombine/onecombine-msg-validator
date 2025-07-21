@@ -50,26 +50,27 @@ type KafkaConfig struct {
 */
 
 type IssuerProfileEvent struct {
-	ID                        uint   `json:"id"`
-	IssuerID                  string `json:"issuer_id"`
-	Name                      string `json:"name"`
-	Description               string `json:"description"`
-	ApiKey                    string `json:"apiKey"`
-	Secret                    string `json:"secret"`
-	OrganizationID            uint   `json:"orgId"`
-	FxName                    string `json:"fx_name"`
-	FXValue                   string `json:"fx_value"`
-	SettlementFee             string `json:"settlement_fee"`
-	SettlementFeeType         string `json:"settlement_type"`
-	SettlementFeeWaived       bool   `json:"settlement_waived"`
-	SwitchingFee              string `json:"switching_fee"`
-	SwitchingFeeType          string `json:"switching_type"`
-	SwitchingFeeWaived        bool   `json:"switching_waived"`
-	SettlementCurrencyCode    string `json:"settlement_currency_code"`
-	SettlementReportBucket    string `json:"settlement_report_bucket"`
-	RefundNotificationWebHook string `json:"refund_notification_web_hook"`
-	Created                   string `json:"created"`
-	Modified                  string `json:"modified"`
+	ID                              uint   `json:"id"`
+	IssuerID                        string `json:"issuer_id"`
+	Name                            string `json:"name"`
+	Description                     string `json:"description"`
+	ApiKey                          string `json:"apiKey"`
+	Secret                          string `json:"secret"`
+	OrganizationID                  uint   `json:"orgId"`
+	FxName                          string `json:"fx_name"`
+	FXValue                         string `json:"fx_value"`
+	SettlementFee                   string `json:"settlement_fee"`
+	SettlementFeeType               string `json:"settlement_type"`
+	SettlementFeeWaived             bool   `json:"settlement_waived"`
+	SwitchingFee                    string `json:"switching_fee"`
+	SwitchingFeeType                string `json:"switching_type"`
+	SwitchingFeeWaived              bool   `json:"switching_waived"`
+	SettlementCurrencyCode          string `json:"settlement_currency_code"`
+	SettlementReportBucket          string `json:"settlement_report_bucket"`
+	RefundNotificationWebHook       string `json:"refund_notification_web_hook"`
+	CancellationNotificationWebHook string `json:"cancelled_notification_web_hook"`
+	Created                         string `json:"created"`
+	Modified                        string `json:"modified"`
 }
 
 type IssuerProfileConsumer interface {
@@ -206,26 +207,27 @@ func NewKafkaIssuerProfileConsumer(store *MemoryStore, cfg *KafkaConfig) IssuerP
 
 func eventToIssuerProfile(e *IssuerProfileEvent) *IssuerProfile {
 	return &IssuerProfile{
-		ID:                        e.ID,
-		IssuerID:                  e.IssuerID,
-		Name:                      e.Name,
-		Description:               e.Description,
-		ApiKey:                    e.ApiKey,
-		Secret:                    e.Secret,
-		OrganizationID:            e.OrganizationID,
-		FXName:                    e.FxName,
-		FXValue:                   e.FXValue,
-		SettlementFee:             e.SettlementFee,
-		SettlementType:            e.SettlementFeeType,
-		SettlementWaived:          e.SettlementFeeWaived,
-		SwitchingFee:              e.SwitchingFee,
-		SwitchingType:             e.SwitchingFeeType,
-		SwitchingWaived:           e.SettlementFeeWaived,
-		SettlementCurrencyCode:    e.SettlementCurrencyCode,
-		SettlementReportBucket:    e.SettlementReportBucket,
-		RefundNotificationWebHook: e.RefundNotificationWebHook,
-		Created:                   e.Created,
-		Modified:                  e.Modified,
+		ID:                           e.ID,
+		IssuerID:                     e.IssuerID,
+		Name:                         e.Name,
+		Description:                  e.Description,
+		ApiKey:                       e.ApiKey,
+		Secret:                       e.Secret,
+		OrganizationID:               e.OrganizationID,
+		FXName:                       e.FxName,
+		FXValue:                      e.FXValue,
+		SettlementFee:                e.SettlementFee,
+		SettlementType:               e.SettlementFeeType,
+		SettlementWaived:             e.SettlementFeeWaived,
+		SwitchingFee:                 e.SwitchingFee,
+		SwitchingType:                e.SwitchingFeeType,
+		SwitchingWaived:              e.SettlementFeeWaived,
+		SettlementCurrencyCode:       e.SettlementCurrencyCode,
+		SettlementReportBucket:       e.SettlementReportBucket,
+		RefundNotificationWebHook:    e.RefundNotificationWebHook,
+		CancelledNotificationWebHook: e.CancellationNotificationWebHook,
+		Created:                      e.Created,
+		Modified:                     e.Modified,
 	}
 }
 
