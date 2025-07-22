@@ -235,7 +235,7 @@ func (s PartnerService) GetIssuerStore() *MemoryStore {
 func (s PartnerService) GetIssuerByID(id string) *IssuerProfile {
 	for _, v := range s.issStore.GetAll() {
 		// Check id
-		if id == v.(IssuerProfile).IssuerID {
+		if id == v.(*IssuerProfile).IssuerID {
 			return v.(*IssuerProfile)
 		}
 	}
@@ -246,7 +246,7 @@ func (s PartnerService) GetIssuerByID(id string) *IssuerProfile {
 func (s PartnerService) GetAcquireByID(id string) *AcquirerProfile {
 	for _, v := range s.acqStore.GetAll() {
 		// Check id
-		if id == v.(AcquirerProfile).AcqID {
+		if id == v.(*AcquirerProfile).AcqID {
 			return v.(*AcquirerProfile)
 		}
 	}
