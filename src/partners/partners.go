@@ -232,6 +232,28 @@ func (s PartnerService) GetIssuerStore() *MemoryStore {
 	return s.issStore
 }
 
+func (s PartnerService) GetIssuerByID(id string) *IssuerProfile {
+	for _, v := range s.issStore.GetAll() {
+		// Check id
+		if id == v.(IssuerProfile).IssuerID {
+			return v.(*IssuerProfile)
+		}
+	}
+
+	return nil
+}
+
+func (s PartnerService) GetAcquireByID(id string) *AcquirerProfile {
+	for _, v := range s.acqStore.GetAll() {
+		// Check id
+		if id == v.(AcquirerProfile).AcqID {
+			return v.(*AcquirerProfile)
+		}
+	}
+
+	return nil
+}
+
 func (s PartnerService) WaitForCompletion() {
 	s.wg.Wait()
 }
