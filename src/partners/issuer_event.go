@@ -67,8 +67,8 @@ type IssuerProfileEvent struct {
 	SwitchingFeeWaived              bool   `json:"switching_waived"`
 	SettlementCurrencyCode          string `json:"settlement_currency_code"`
 	SettlementReportBucket          string `json:"settlement_report_bucket"`
-	RefundNotificationWebHook       string `json:"refund_notification_web_hook"`
-	CancellationNotificationWebHook string `json:"cancelled_notification_web_hook"`
+	RefundNotificationWebHook       string `json:"refund_notification_webhook"`
+	CancellationNotificationWebHook string `json:"cancelled_notification_webhook"`
 	Created                         string `json:"created"`
 	Modified                        string `json:"modified"`
 }
