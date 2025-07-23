@@ -1,5 +1,7 @@
 package utils
 
+import "encoding/json"
+
 const (
 	CODE_INTERNAL_ERROR           = "00500001"
 	CODE_APIKEY_MISSING           = "00400001"
@@ -84,4 +86,11 @@ func CreateErrorResponse(code string) *ErrorResponse {
 	}
 
 	return nil
+}
+
+func ErrorResponseToMap(e *ErrorResponse) map[string]string {
+	out := make(map[string]string)
+	j, _ := json.Marshal(e)
+	json.Unmarshal(j, &out)
+	return out
 }
