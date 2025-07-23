@@ -3,11 +3,14 @@ package utils
 import "encoding/json"
 
 const (
-	CODE_INTERNAL_ERROR           = "00500001"
-	CODE_APIKEY_MISSING           = "00400001"
-	CODE_INVALID_SIGNATURE        = "00400002"
-	CODE_BAD_REQUEST              = "00400006"
-	CODE_ORDER_NOT_FOUND          = "00404001"
+	CODE_INTERNAL_ERROR    = "00500001"
+	CODE_APIKEY_MISSING    = "00400001"
+	CODE_INVALID_SIGNATURE = "00400002"
+	CODE_BAD_REQUEST       = "00400006"
+	CODE_ORDER_NOT_FOUND   = "00404001"
+	CODE_ORDER_REF_EXIST   = "00400009"
+
+	// Reversal
 	CODE_REFUND_NOT_ALLOW         = "20402002"
 	CODE_CANCEL_NOT_ALLOW         = "20402003"
 	CODE_CURRENCY_NOT_MATCH_ORGTX = "20402005"
@@ -15,11 +18,14 @@ const (
 )
 
 const (
-	MSG_INTERNAL_ERROR           = "Internal system error"
-	MSG_APIKEY_MISSING           = "Apikey is missing or invalid"
-	MSG_INVALID_SIGNATURE        = "Invalid signature"
-	MSG_BAD_REQUEST              = "A field contains invalid value"
-	MSG_ORDER_NOT_FOUND          = "Order cannot be found"
+	MSG_INTERNAL_ERROR    = "Internal system error"
+	MSG_APIKEY_MISSING    = "Apikey is missing or invalid"
+	MSG_INVALID_SIGNATURE = "Invalid signature"
+	MSG_BAD_REQUEST       = "A field contains invalid value"
+	MSG_ORDER_NOT_FOUND   = "Order cannot be found"
+	MSG_ORDER_REF_EXIST   = "order_ref already exists"
+
+	// Reversal
 	MSG_REFUND_NOT_ALLOW         = "Refund transaction operation is not allow"
 	MSG_CANCEL_NOT_ALLOW         = "Cancel transaction operation is not allowed"
 	MSG_CURRENCY_NOT_MATCH_ORGTX = "Refund/Cancel currency does not match transaction currency"
