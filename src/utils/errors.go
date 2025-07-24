@@ -28,8 +28,8 @@ const (
 	MSG_ORDER_REF_EXIST   = "order_ref already exists"
 
 	// Reversal
-	MSG_REFUND_NOT_ALLOW             = "Refund transaction operation is not allow"
-	MSG_CANCEL_NOT_ALLOW             = "Cancel transaction operation is not allowed"
+	MSG_REFUND_NOT_ALLOW             = "Transaction not in refundable state"
+	MSG_CANCEL_NOT_ALLOW             = "Transaction not in cancellation state"
 	MSG_CURRENCY_NOT_MATCH_ORGTX     = "Refund/Cancel currency does not match transaction currency"
 	MSG_AMOUNT_EXCEEDED_ORGTX        = "Refund/Cancel amount exceeds remaining amount that can be refunded/cancelled"
 	MSG_PARTIAL_REFUND_NOT_SUPPORTED = "Partial refund is not supported"
