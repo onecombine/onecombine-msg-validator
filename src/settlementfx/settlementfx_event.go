@@ -36,7 +36,13 @@ type fxConsumer struct {
 
 // Process implements SettlementFXConsumer.
 func (f *fxConsumer) Process(e *SettlementFxEvent) error {
-	f.store.Set(e.Pair, e)
+	fx := &SettlementFX{
+		Pair:     e.Pair,
+		Value:    e.Value,
+		Created:  e.Created,
+		Modified: e.Modified,
+	}
+	f.store.Set(fx.Pair, fx)
 	return nil
 }
 
