@@ -1,0 +1,53 @@
+// partner.proto
+syntax = "proto3";
+
+package messages;
+option go_package = 'github.com/onecombine/onecombine-msg-validator/src/messages';
+
+message IssuerProfile {
+    string version = 1;
+    int32 id = 2;
+    string issuer_id = 3;
+    string name = 4;
+    string description = 5;
+    string api_key = 6;
+    string secret = 7;
+    int32 org_id = 8;
+    string fx_name = 9;
+    string fx_value = 10;
+    string settlement_fee = 11;
+    string settlement_fee_type = 12;
+    bool settlement_fee_waived = 13;
+    string switching_fee = 14;
+    string switching_fee_type = 15;
+    bool switching_fee_waived = 16;
+    string settlement_currency_code = 17;
+    string settlement_report_bucket = 18;
+    string refund_notification_webhook = 19;
+    string calcellation_notification_webhook = 20;
+    string created = 21;
+    string modified = 22;
+}
+
+message AcquirerProfile {
+    string version = 1;
+    int32 id = 2;
+    string acq_id = 3;
+    string name = 4;
+    string description = 5;
+    string api_key = 6;
+    string secret = 7;
+    int32 org_id = 8;
+    string notification_webhook = 9;
+    string settlement_fee = 10;
+    string settlement_fee_type = 11;
+    bool settlement_fee_waived = 12;
+    string switching_fee = 13;
+    string switching_fee_type = 14;
+    bool switching_fee_waived = 15;
+    string settlement_currency_code = 16;
+    string settlement_report_bucket = 17;
+    string created = 18;
+    string modified = 19;
+
+}

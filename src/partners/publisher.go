@@ -24,12 +24,17 @@ type EventPublisherConfig struct {
 	Timeout                  string
 }
 
-type EventPublisher struct {
+type eventPublisher struct {
 	a *kafka.Writer
 	i *kafka.Writer
 }
 
-func (p *EventPublisher) PublishAcquirerProfileChangedEvent(ctx context.Context, acq *AcquirerProfile) error {
+type EventPublisher interface {
+	PublishAcquirerProfileChangedEvent(ctx context.Context, acq *AcquirerProfile) error
+	PublishIssuerProfileChangedEvent(ctx context.Context, iss *IssuerProfile) error
+}
+
+func (p *eventPublisher) PublishAcquirerProfileChangedEvent(ctx context.Context, acq *AcquirerProfile) error {
 
 	val, err := json.Marshal(acq)
 	if err != nil {
@@ -49,7 +54,7 @@ func (p *EventPublisher) PublishAcquirerProfileChangedEvent(ctx context.Context,
 	return nil
 }
 
-func (p *EventPublisher) PublishIssuerProfileChangedEvent(ctx context.Context, iss *IssuerProfile) error {
+func (p *eventPublisher) PublishIssuerProfileChangedEvent(ctx context.Context, iss *IssuerProfile) error {
 
 	val, err := json.Marshal(iss)
 	if err != nil {
@@ -69,7 +74,7 @@ func (p *EventPublisher) PublishIssuerProfileChangedEvent(ctx context.Context, i
 	return nil
 }
 
-func NewEventPublisher(cfg *EventPublisherConfig) *EventPublisher {
+func NewEventPublisher(cfg *EventPublisherConfig) EventPublisher {
 	var dialer *kafka.Dialer
 
 	switch cfg.QueueType {
@@ -115,7 +120,7 @@ func NewEventPublisher(cfg *EventPublisherConfig) *EventPublisher {
 		//ErrorLogger: kafka.LoggerFunc(logError),
 	}
 
-	return &EventPublisher{
+	return &eventPublisher{
 		i: kafka.NewWriter(issKafkaConfig),
 		a: kafka.NewWriter(acqKafkaConfig),
 	}

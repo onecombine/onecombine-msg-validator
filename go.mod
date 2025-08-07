@@ -1,6 +1,8 @@
 module github.com/onecombine/onecombine-msg-validator
 
-go 1.21.0
+go 1.22
+
+toolchain go1.23.12
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.21.0
@@ -12,6 +14,7 @@ require (
 	github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2 v0.1.0
 	github.com/stretchr/testify v1.8.4
 	github.com/valyala/fasthttp v1.48.0
+	google.golang.org/protobuf v1.36.6
 )
 
 require (
