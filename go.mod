@@ -1,8 +1,8 @@
 module github.com/onecombine/onecombine-msg-validator
 
-go 1.22
+go 1.24
 
-toolchain go1.23.12
+toolchain go1.24.12
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.21.0
